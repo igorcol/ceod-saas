@@ -14,9 +14,9 @@ import Link from "next/link"
 
 const menuItems = [
     { icon: Home, label: "Inicio", href: "/" },
-    { icon: QrCode, label: "Criar Ingressos", href: "/ingressos" },
-    { icon: Mail, label: "Enviar Emails", href: "/emails" },
     { icon: FileSpreadsheet, label: "Converter Planilha", href: "/spreadsheet" },
+    { icon: QrCode, label: "Gerar Ingressos", href: "/ingressos" },
+    { icon: Mail, label: "Enviar Emails", href: "/emails" },
   ]
 
 export default function Page() {
@@ -25,9 +25,11 @@ export default function Page() {
     return (
         <SidebarComponent>
 
-            <SidebarHeader className="p-4">
-                <h2 className="text-xl font-bold">Gerador de Ingressos</h2>
-            </SidebarHeader>
+            <Link href="/" className="block">
+                <SidebarHeader className="p-4">
+                    <h2 className="text-xl font-bold">Gerador de Ingressos</h2>
+                </SidebarHeader>
+            </Link>
 
             <SidebarContent>
                 <SidebarMenu>
