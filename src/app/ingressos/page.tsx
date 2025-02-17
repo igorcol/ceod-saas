@@ -31,6 +31,8 @@ const page: React.FC = () => {
   const [generatedQRCodes, setGeneratedQRCodes] = useState<QRCodeData[]>([]);
   const [isOnline, setIsOnline] = useState(false);
 
+  const [spreadsheetJson, setSpreadsheetJson] = useState(null)
+
   const handleFileUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
     setter: (value: string | null) => void
@@ -61,6 +63,7 @@ const page: React.FC = () => {
   useEffect(() => {
     setGeneratedQRCodes(generatedQRCodes);
   }, [generatedQRCodes]);
+
 
   return (
     <div className="space-y-6">

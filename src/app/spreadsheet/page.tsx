@@ -26,7 +26,7 @@ const page: React.FC = () => {
             let new_blob = await excelToJson(file)
             let new_file = new File([new_blob], file.name, { type: new_blob.type })
             setConvertedFile(new_file)
-            setIsConverted(true)
+            setIsConverted(true) 
         }
     }
 
