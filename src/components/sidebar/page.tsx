@@ -12,6 +12,8 @@ import { FileSpreadsheet, Home, Mail, QrCode } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 
+import ThemeToggle from "@/components/theme-provider/_components/theme-toggle"
+
 const menuItems = [
     { icon: Home, label: "Inicio", href: "/" },
     { icon: FileSpreadsheet, label: "Converter Planilha", href: "/spreadsheet" },
@@ -45,7 +47,10 @@ export default function Page() {
                         </SidebarMenuItem>
                     ))}
                 </SidebarMenu>
-            </SidebarContent>
+            </SidebarContent >
+            <SidebarFooter className="p-4">
+                <ThemeToggle/>
+            </SidebarFooter>
         </SidebarComponent>
     )
 }
