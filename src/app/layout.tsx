@@ -10,7 +10,7 @@ import ThemeProvider from "@/components/theme-provider/page"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CEOD DashBoard",
+  title: "CEOD - Ingressos",
 };
 
 export default function RootLayout({

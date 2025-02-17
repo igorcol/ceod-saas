@@ -47,7 +47,7 @@ const page: React.FC = () => {
     }
   };
 
-  const generateQrCode = () => {
+  const generateQrCode = (/* adicionar obj user */) => {
     if(!qrData) return
     const newQrCode: QRCodeData = {
       id: 123,
