@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { QRCodeData } from "../page";
+import { QRCodeData } from "@/lib/qrUtils";
 
 interface PageProps {
   generatedQRCodes: QRCodeData[];

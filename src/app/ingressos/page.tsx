@@ -14,22 +14,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import QrTable from './_components/qr-table'
-
-export type QRCodeData = {
-  id: number;
-  data: string;
-  version: number;
-  backgroundImg?: string | null;
-  watermark?: string | null;
-};
+import { fetchData } from "@/lib/api";
+import { CreateAndBufferQrCode, QRCodeData } from "@/lib/qrUtils"
+import { GenerateQrImage } from '@/lib/imageUtils'
 
 const page: React.FC = () => {
   const [qrVersion, setQRVersion] = useState("4");
-  const [qrData, setQRData] = useState("");
+  const [qrData, setQRData] = useState("CODIGO");
   const [backgroundImg, setBackgroundImg] = useState<string | null>(null);
   const [watermark, setWatermark] = useState<string | null>(null);
   const [generatedQRCodes, setGeneratedQRCodes] = useState<QRCodeData[]>([]);
-  const [isOnline, setIsOnline] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
 
   const [spreadsheetJson, setSpreadsheetJson] = useState(null)
 
@@ -47,18 +42,42 @@ const page: React.FC = () => {
     }
   };
 
-  const generateQrCode = (/* adicionar obj user */) => {
-    if(!qrData) return
-    const newQrCode: QRCodeData = {
-      id: 123,
-      data: qrData,
-      version: Number.parseInt(qrVersion),
-      backgroundImg,
-      watermark,
-    };
-    setGeneratedQRCodes([newQrCode, ...generatedQRCodes]);
-    // Se precisar resetar o form, colocar aqui
-  };
+ 
+  // * QR CODE GENERATION
+  const handleGenerateTicket = async () => {
+    // Recebe a lista de usuarios vindo da API
+    // Para cada usuario, gera um QRcode -> Processa a imagem -> Salva a imagem
+    try {
+      fetchData('users').then(async (users) => {
+        users?.forEach(async (user: { ID: number; qrData: string; [key: string]: any; }) => { 
+          const newQrStruct: QRCodeData = {
+            id: user.ID,
+            data: user[qrData],
+            version: Number.parseInt(qrVersion),
+            backgroundImg,
+            watermark, 
+          };
+          console.log(newQrStruct)
+          setGeneratedQRCodes((prev) => [newQrStruct, ...prev]);
+
+          
+          let new_buffer = await CreateAndBufferQrCode(newQrStruct) as Buffer
+          GenerateQrImage(
+            new_buffer,
+            backgroundImg || '',
+            watermark || '',
+            "@/public/ingressos",
+            user.NOME
+          )
+        });
+      // TODO:   Criar qr code
+      // TODO:   Processar Imagem
+      // TODO:     Salvar imagens
+      })
+    } catch(err) {
+      console.log("Error gerando ingresso: ",err)
+    }
+  }
 
   useEffect(() => {
     setGeneratedQRCodes(generatedQRCodes);
@@ -80,7 +99,7 @@ const page: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Versão do QR Code</Label>
-            <Select value={qrVersion} onValueChange={setQRVersion}>
+            <Select value={qrVersion} onValueChange={setQRVersion} >
               <SelectTrigger id="qr-version">
                 <SelectValue placeholder="Selecione a versão" />
               </SelectTrigger>
@@ -96,14 +115,14 @@ const page: React.FC = () => {
 
           <div className="space-y-2">
             <Label htmlFor="qr-data">Dado</Label>
-            <Select onValueChange={setQRData}>
+            <Select onValueChange={setQRData} defaultValue="CODIGO">
               <SelectTrigger id="qr-data">
                 <SelectValue placeholder="Dados do QR Code" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="user.ID">Id</SelectItem>
-                <SelectItem value="user.CODIGO">Código de inscrição</SelectItem>
-                <SelectItem value="user.NOME">Nome</SelectItem>
+                <SelectItem value="ID">Id</SelectItem>
+                <SelectItem value="CODIGO">Código de inscrição</SelectItem>
+                <SelectItem value="NOME">Nome</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -149,7 +168,7 @@ const page: React.FC = () => {
           </div>
         </div>
 
-        <Button onClick={generateQrCode}>Criar QR Codes</Button>
+        <Button onClick={handleGenerateTicket}>Criar QR Codes</Button>
       </div>
 
       <QrTable generatedQRCodes={generatedQRCodes}/>
