@@ -15,8 +15,8 @@ import { Button } from "@/components/ui/button";
 
 import QrTable from './_components/qr-table'
 import { fetchData } from "@/lib/api";
-import { CreateAndBufferQrCode, QRCodeData } from "@/lib/qrUtils"
-import { GenerateQrImage } from '@/lib/imageUtils'
+import { QRCodeData } from "@/lib/qrUtils"
+import { generateTicketImage, saveTicketImage } from '@/lib/imageUtils'
 
 const page: React.FC = () => {
   const [qrVersion, setQRVersion] = useState("4");
@@ -42,8 +42,49 @@ const page: React.FC = () => {
     }
   };
 
+  // * Chama a função na API para Gerar o QR CODE
+  const generateQrCode = async (QRData : QRCodeData) => {
+    //console.log("[generateQrCode] QRData: ", QRData)
+    try {
+      const response = await fetch(`/api/generate-qrcode`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(QRData),
+        /* 
+        * Body example
+        backgroundImg: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAA
+        data: "MTgxMDg="
+        id: "95476"
+        version: 4
+        watermark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABdwAAA
+        */
+      })
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`[generateQrCode] Erro ao gerar QR Code: ${errorData.error}`);
+      }
+
+      // const { qrCode } = await response.json()
+      // console.log("[generateQrCode] { qrCode } ", JSON.stringify(qrCode))
+      // return `data:image/png;base64,${qrCode}`
+
+      const jsonResponse = await response.json()
+
+      if (!jsonResponse.qrCode) {
+        throw new Error("QR Code não foi gerado corretamente");
+      }
+
+      return `data:image/png;base64,${jsonResponse.qrCode}`;
+
+    } catch (err) {
+      console.error("Erro ao gerar QR Code:", err);
+      return ""
+    }
+  }
+
+  
  
-  // * QR CODE GENERATION
+  // * GERAÇÃO DO INGRESSO
   const handleGenerateTicket = async () => {
     // Recebe a lista de usuarios vindo da API
     // Para cada usuario, gera um QRcode -> Processa a imagem -> Salva a imagem
@@ -57,22 +98,15 @@ const page: React.FC = () => {
             backgroundImg,
             watermark, 
           };
-          console.log(newQrStruct)
-          setGeneratedQRCodes((prev) => [newQrStruct, ...prev]);
 
-          
-          let new_buffer = await CreateAndBufferQrCode(newQrStruct) as Buffer
-          GenerateQrImage(
-            new_buffer,
-            backgroundImg || '',
-            watermark || '',
-            "@/public/ingressos",
-            user.NOME
-          )
+          //* Gera o QR Code e retorna um link com a imagem
+          const qrCodeUrl = await generateQrCode(newQrStruct) 
+          // * Gera a imagem do Ingresso e salva 
+          const ticketImageUrl = await saveTicketImage(qrCodeUrl, newQrStruct)
+
+          //setGeneratedQRCodes((prev) => [newQrStruct, ...prev]);
+          setGeneratedQRCodes((prev) => [{ ...newQrStruct, ticketUrl: ticketImageUrl }, ...prev]);
         });
-      // TODO:   Criar qr code
-      // TODO:   Processar Imagem
-      // TODO:     Salvar imagens
       })
     } catch(err) {
       console.log("Error gerando ingresso: ",err)
