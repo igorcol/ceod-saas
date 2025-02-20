@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import QrTable from './_components/qr-table'
 import { fetchData } from "@/lib/api";
 import { QRCodeData } from "@/lib/qrUtils"
-import { generateTicketImage, saveTicketImage } from '@/lib/imageUtils'
+import { saveTicketImage } from '@/lib/imageUtils'
 
 const page: React.FC = () => {
   const [qrVersion, setQRVersion] = useState("4");
@@ -24,9 +24,12 @@ const page: React.FC = () => {
   const [backgroundImg, setBackgroundImg] = useState<string | null>(null);
   const [watermark, setWatermark] = useState<string | null>(null);
   const [generatedQRCodes, setGeneratedQRCodes] = useState<QRCodeData[]>([]);
+
+  const [qrColor, setQrColor] = useState('white')
+  const [qrBgColor, setQrBgColor] = useState('transparent')
+
   const [isOnline, setIsOnline] = useState(true);
 
-  const [spreadsheetJson, setSpreadsheetJson] = useState(null)
 
   const handleFileUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -50,23 +53,11 @@ const page: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(QRData),
-        /* 
-        * Body example
-        backgroundImg: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAA
-        data: "MTgxMDg="
-        id: "95476"
-        version: 4
-        watermark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABdwAAA
-        */
       })
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`[generateQrCode] Erro ao gerar QR Code: ${errorData.error}`);
       }
-
-      // const { qrCode } = await response.json()
-      // console.log("[generateQrCode] { qrCode } ", JSON.stringify(qrCode))
-      // return `data:image/png;base64,${qrCode}`
 
       const jsonResponse = await response.json()
 
@@ -82,12 +73,11 @@ const page: React.FC = () => {
     }
   }
 
-  
- 
   // * GERAÇÃO DO INGRESSO
   const handleGenerateTicket = async () => {
     // Recebe a lista de usuarios vindo da API
     // Para cada usuario, gera um QRcode -> Processa a imagem -> Salva a imagem
+    setGeneratedQRCodes([]) // zera a lista de ingressos gerados
     try {
       fetchData('users').then(async (users) => {
         users?.forEach(async (user: { ID: number; qrData: string; [key: string]: any; }) => { 
@@ -119,7 +109,7 @@ const page: React.FC = () => {
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full overflow-hidden ">
       <h1 className="text-3xl font-bold">Gerar Ingressos</h1>
 
       <div className="flex items-center space-x-2">
@@ -160,11 +150,38 @@ const page: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="space-y-2">
+            <Label>Cor do QR Code</Label>
+            <Select value={qrColor} onValueChange={setQrColor} >
+              <SelectTrigger id="qr-version">
+                <SelectValue placeholder="Selecione a versão" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="black">Preto</SelectItem>
+                <SelectItem value="white">Branco</SelectItem>
+                <SelectItem value="red">Vermelho</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Fundo do QR Code</Label>
+            <Select value={qrBgColor} onValueChange={setQrBgColor} >
+              <SelectTrigger id="qr-version">
+                <SelectValue placeholder="Selecione a versão" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="black">Preto</SelectItem>
+                <SelectItem value="white">Branco</SelectItem>
+                <SelectItem value="transparent">Transparente</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="background-img">Imagem de Fundo (opcional)</Label>
+          <div className="space-y-2 ">
+            <Label htmlFor="background-img">Imagem de Fundo</Label>
             <Input
               id="background-img"
               type="file"

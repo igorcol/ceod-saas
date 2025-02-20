@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { QRCodeData } from "@/lib/qrUtils";
+import { useEffect, useState } from "react";
 
 interface PageProps {
   generatedQRCodes: QRCodeData[];
@@ -15,26 +16,37 @@ interface PageProps {
 
 export default function Page({ generatedQRCodes }: PageProps) {
 
+  const [tickets, setTickets] = useState<{ name: string; url: string }[]>([]);
+
+  const loadSavedTickets = async () => {
+    try {
+      const response = await fetch("/api/list-tickets")
+      if (!response.ok) throw new Error("Erro ao carregar ingressos salvos.")
+      const {tickets} = await response.json()
+      setTickets(tickets)
+    }
+    catch (error) {
+      console.error("Erro ao buscar ingressos:", error);
+    }
+  }
+  useEffect(() => {
+    loadSavedTickets()
+  }, [])
+
   return (
-    <div>
+    <div className="w-screen">
       <h2 className="text-2xl font-semibold mb-4">Ingressos Gerados</h2>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Data</TableHead>
-            <TableHead>QR Code</TableHead>
+            <TableHead>Ingresso:</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-        {generatedQRCodes.length > 0 ? (
-            generatedQRCodes.map((qrCode) => (
-              <TableRow key={qrCode.id}>
-                <TableCell>{qrCode.data}</TableCell>
-                <TableCell>
-                  {qrCode.backgroundImg && (
-                    <img src={qrCode.backgroundImg} alt="QR Code" className="max-w-[100px] h-auto" />
-                  )}
-                </TableCell>
+        {tickets.length > 0 ? (
+            tickets.map((ticket) => (
+              <TableRow key={ticket.name} className="cursor-pointer">
+                <TableCell>+ {ticket.name}</TableCell>
               </TableRow>
             ))
           ) : (

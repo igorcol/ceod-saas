@@ -28,7 +28,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SidebarProvider>
-            <div className="flex h-screen">
+            <div className="flex h-screen w-screen">
               <Sidebar />
               <main className="flex-1 overflow-y-auto p-8">{children}</main>
             </div>

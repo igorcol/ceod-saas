@@ -4,7 +4,7 @@ import QRcode from 'qrcode'
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json() //? Body precisa ser só o dado? (ex: user.CODIGO)
+        const body = await req.json()
         
         if (!body || typeof body !== "object" || !body.data || typeof body.data !== "string") {
             return NextResponse.json({ error: "Parâmetro 'data' ausente ou inválido" }, { status: 400 });

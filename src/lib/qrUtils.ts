@@ -22,7 +22,11 @@ export async function CreateAndBufferQrCode( QRData:QRCodeData ): Promise<string
             type: 'png',  
             version: VERSION,  
             errorCorrectionLevel: 'H',  
-            margin: 0  
+            margin: 0,
+            color: {
+                dark: '#FFFFFF',
+                light: '#00000000',
+            }
         });
         // Buffer com a imagem do QR code
         return qrBuffer.toString("base64");
