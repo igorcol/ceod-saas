@@ -221,7 +221,7 @@ const page: React.FC = () => {
           </div>
         </div>
 
-        <Button onClick={handleGenerateTicket}>Criar QR Codes</Button>
+        <Button className="hover:bg-red-800" onClick={handleGenerateTicket}>Criar QR Codes</Button>
       </div>
 
       <QrTable generatedQRCodes={generatedQRCodes}/>
