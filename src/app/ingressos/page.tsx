@@ -47,7 +47,6 @@ const page: React.FC = () => {
 
   // * Chama a função na API para Gerar o QR CODE
   const generateQrCode = async (QRData : QRCodeData) => {
-    //console.log("[generateQrCode] QRData: ", QRData)
     try {
       const response = await fetch(`/api/generate-qrcode`, {
         method: "POST",
@@ -82,6 +81,7 @@ const page: React.FC = () => {
       fetchData('users').then(async (users) => {
         users?.forEach(async (user: { ID: number; qrData: string; [key: string]: any; }) => { 
           const newQrStruct: QRCodeData = {
+            name: user.NOME,
             id: user.ID,
             data: user[qrData],
             version: Number.parseInt(qrVersion),
@@ -98,7 +98,7 @@ const page: React.FC = () => {
 
           //setGeneratedQRCodes((prev) => [newQrStruct, ...prev]);
           setGeneratedQRCodes((prev) => [{ ...newQrStruct, ticketUrl: ticketImageUrl }, ...prev]);
-        });
+        })
       })
     } catch(err) {
       console.log("Error gerando ingresso: ",err)
@@ -183,7 +183,7 @@ const page: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 ">
-            <Label htmlFor="background-img">Imagem de Fundo</Label>
+            <Label htmlFor="background-img">Imagem de Fundo (opicional)</Label>
             <Input
               id="background-img"
               type="file"
@@ -202,7 +202,7 @@ const page: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="watermark">Marca D'Água</Label>
+            <Label htmlFor="watermark">Marca D'Água  (opicional)</Label>
             <Input
               id="watermark"
               type="file"

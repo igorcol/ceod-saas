@@ -4,6 +4,7 @@ import { Buffer } from "buffer";
 
 // Estrutura para a criação do QrCode
 export interface QRCodeData { 
+    name: string;
     id: number;
     data: string;
     version: number;
