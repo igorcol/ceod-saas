@@ -71,7 +71,7 @@ export default function Page({ generatedQRCodes }: PageProps) {
             tickets.map((ticket) => (
               <TableRow key={ticket.name} className="cursor-pointer" onClick={() => window.open(ticket.url, "_blank")}>
                   <TableCell>
-                    {ticket.name}
+                    {tickets.indexOf(ticket) + 1}. {ticket.name}
                   </TableCell>
               </TableRow>
             ))
