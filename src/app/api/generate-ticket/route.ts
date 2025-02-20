@@ -12,7 +12,7 @@ export async function POST(req: Request) {
             return NextResponse.json({error: "Dados Insuficientes para a geração do ingresso"}, {status: 401}) //! Voltar para 400
         }
 
-        console.log("📥 Gerando ingresso:", saveName);
+        console.log("📥 Gerando imagem:", saveName);
         // console.log("📥 Recebido na API:");
         // console.log("🔹 qrCode:", qrBuffer ? "✅ OK" : "❌ Faltando");
         // console.log("🔹 backgroundImg:", backgroundImg ? "✅ OK" : "❌ Faltando");

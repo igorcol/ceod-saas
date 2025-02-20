@@ -16,8 +16,6 @@ export async function GenerateQrImage(
       // console.log("🔹 backImg:", backImg ? "✅ OK" : "❌ Faltando");
       // console.log("🔹 watermark:", watermark ? "✅ OK" : "❌ Faltando");
 
-      const isBase64 = (str: string) => str.startsWith("data:image")
-
       const backgroundPath = path.resolve("public/default-background.png");
       const watermarkPath = path.resolve("public/default-watermark.png");
 
@@ -29,8 +27,8 @@ export async function GenerateQrImage(
         // Carregar imagens
         const [background, qrImage, watermarkImg] = await Promise.all([
           loadImage(backImg, backgroundPath),
-          Jimp.read(qrBuffer), // O QR Code já está em Buffer, não precisa de conversão
-          loadImage(watermark, watermarkPath)
+          Jimp.read(qrBuffer),
+          watermark ? Jimp.read(watermark) : null
       ]);
 
         // Ajusta o tamanho do QR Code
@@ -39,12 +37,16 @@ export async function GenerateQrImage(
         // Define as coordenadas para posicionar o QR Code e a marca d'água
         const x_qr = Math.floor((background.bitmap.width - qrImage.bitmap.width) / 2);
         const y_qr = Math.floor((background.bitmap.height - qrImage.bitmap.height) / 2);
-        const x_wm = Math.floor((background.bitmap.width - watermarkImg.bitmap.width) / 2);
-        const y_wm = Math.floor((background.bitmap.height - watermarkImg.bitmap.height) / 2);
+        
 
         // Mescla as imagens
         background.composite(qrImage, x_qr, y_qr);
-        background.composite(watermarkImg, x_wm, y_wm);
+
+        if (watermarkImg) {
+          const x_wm = Math.floor((background.bitmap.width - watermarkImg.bitmap.width) / 2);
+          const y_wm = Math.floor((background.bitmap.height - watermarkImg.bitmap.height) / 2);
+          background.composite(watermarkImg, x_wm, y_wm);
+        }
 
         // Salvar a imagem
         await background.write(outputPath);
