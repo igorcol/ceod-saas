@@ -7,6 +7,8 @@ export interface QRCodeData {
     id: number;
     data: string;
     version: number;
+    qrColor: string;
+    qrBgColor: string;
     backgroundImg?: string | null;
     watermark?: string | null;
 }
@@ -24,8 +26,8 @@ export async function CreateAndBufferQrCode( QRData:QRCodeData ): Promise<string
             errorCorrectionLevel: 'H',  
             margin: 0,
             color: {
-                dark: '#FFFFFF',
-                light: '#00000000',
+                dark: QRData.qrColor,
+                light: QRData.qrBgColor,
             }
         });
         // Buffer com a imagem do QR code

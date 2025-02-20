@@ -25,8 +25,8 @@ const page: React.FC = () => {
   const [watermark, setWatermark] = useState<string | null>(null);
   const [generatedQRCodes, setGeneratedQRCodes] = useState<QRCodeData[]>([]);
 
-  const [qrColor, setQrColor] = useState('white')
-  const [qrBgColor, setQrBgColor] = useState('transparent')
+  const [qrColor, setQrColor] = useState('#FFFFFF')
+  const [qrBgColor, setQrBgColor] = useState('#00000000')
 
   const [isOnline, setIsOnline] = useState(true);
 
@@ -85,6 +85,8 @@ const page: React.FC = () => {
             id: user.ID,
             data: user[qrData],
             version: Number.parseInt(qrVersion),
+            qrColor,
+            qrBgColor,
             backgroundImg,
             watermark, 
           };
@@ -158,9 +160,9 @@ const page: React.FC = () => {
                 <SelectValue placeholder="Selecione a versão" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="black">Preto</SelectItem>
-                <SelectItem value="white">Branco</SelectItem>
-                <SelectItem value="red">Vermelho</SelectItem>
+                <SelectItem value="#000000">Preto</SelectItem>
+                <SelectItem value="#FFFFFF">Branco</SelectItem>
+                <SelectItem value="#f55033">Vermelho</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -171,9 +173,9 @@ const page: React.FC = () => {
                 <SelectValue placeholder="Selecione a versão" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="black">Preto</SelectItem>
-                <SelectItem value="white">Branco</SelectItem>
-                <SelectItem value="transparent">Transparente</SelectItem>
+                <SelectItem value="#000000">Preto</SelectItem>
+                <SelectItem value="#FFFFFF">Branco</SelectItem>
+                <SelectItem value="#00000000">Transparente</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { CreateAndBufferQrCode, QRCodeData } from "@/lib/qrUtils";
-import QRcode from 'qrcode'
 
 export async function POST(req: Request) {
     try {
@@ -9,13 +8,13 @@ export async function POST(req: Request) {
         if (!body || typeof body !== "object" || !body.data || typeof body.data !== "string") {
             return NextResponse.json({ error: "Parâmetro 'data' ausente ou inválido" }, { status: 400 });
         }
-        // const qrCodeBuffer = await CreateAndBufferQrCode(data);
-        // const qrCodeBase64 = Buffer.from(qrCodeBuffer).toString('base64');
 
         const qrCodeData : QRCodeData = {
             id: body.id,
             data: body.data,
             version: body.version,
+            qrColor: body.qrColor,
+            qrBgColor: body.qrBgColor,
             backgroundImg: body.backgroundImg,
             watermark: body.watermark
         }
