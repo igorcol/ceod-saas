@@ -1,4 +1,5 @@
-"use client"
+"use client";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,7 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { saveTicketImage } from "@/lib/imageUtils";
 import { QRCodeData } from "@/lib/qrUtils";
+import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface PageProps {
@@ -15,27 +18,48 @@ interface PageProps {
 }
 
 export default function Page({ generatedQRCodes }: PageProps) {
-
   const [tickets, setTickets] = useState<{ name: string; url: string }[]>([]);
 
   const loadSavedTickets = async () => {
     try {
-      const response = await fetch("/api/list-tickets")
-      if (!response.ok) throw new Error("Erro ao carregar ingressos salvos.")
-      const {tickets} = await response.json()
-      setTickets(tickets)
-    }
-    catch (error) {
+      const response = await fetch("/api/list-tickets");
+      if (!response.ok) throw new Error("Erro ao carregar ingressos salvos.");
+      const { tickets } = await response.json();
+      setTickets(tickets);
+    } catch (error) {
       console.error("Erro ao buscar ingressos:", error);
     }
-  }
+  };
   useEffect(() => {
-    loadSavedTickets()
-  }, [])
+    loadSavedTickets();
+  }, []);
+
+  const handleTicketsDownload = async () => {
+    try {
+      const response = await fetch('/api/download-tickets')
+      if(!response.ok) throw new Error('Erro ao gerar o arquivo ZIP.');
+
+      const { downloadUrl } = await response.json();
+
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'ingressos.zip';
+      link.click();
+    }
+    catch (error) {
+      console.error('🚨 Erro ao baixar ingressos:', error);
+    }
+
+  }
 
   return (
     <div className="w-screen">
-      <h2 className="text-2xl font-semibold mb-4">Ingressos Gerados</h2>
+      <div className="flex flex-row gap-x-4 w-max items-center">
+        <h2 className="text-2xl font-semibold">Ingressos Gerados</h2>
+        <button onClick={() => handleTicketsDownload()}>
+          <Download size={16} color="#72db79" cursor={'pointer'} />
+        </button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -43,17 +67,17 @@ export default function Page({ generatedQRCodes }: PageProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-        {tickets.length > 0 ? (
+          {tickets.length > 0 ? (
             tickets.map((ticket) => (
-              <TableRow key={ticket.name} className="cursor-pointer">
-                <TableCell>+ {ticket.name}</TableCell>
+              <TableRow key={ticket.name} className="cursor-pointer" onClick={() => window.open(ticket.url, "_blank")}>
+                  <TableCell>
+                    {ticket.name}
+                  </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={2} >
-                Nenhum ingresso gerado ainda.
-              </TableCell>
+              <TableCell colSpan={2}>Nenhum ingresso gerado ainda.</TableCell>
             </TableRow>
           )}
         </TableBody>
