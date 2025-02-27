@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Select } from "@/components/ui/select";
@@ -18,7 +19,7 @@ import { fetchData } from "@/lib/api";
 import { QRCodeData } from "@/lib/qrUtils"
 import { saveTicketImage } from '@/lib/imageUtils'
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
   const [qrVersion, setQRVersion] = useState("4");
   const [qrData, setQRData] = useState("CODIGO");
   const [backgroundImg, setBackgroundImg] = useState<string | null>(null);
@@ -79,25 +80,30 @@ const page: React.FC = () => {
     setGeneratedQRCodes([]) // zera a lista de ingressos gerados
     try {
       fetchData('users').then(async (users) => {
-        users?.forEach(async (user: { ID: number; qrData: string; [key: string]: any; }) => { 
+        // ! Arummar @typescript-eslint/no-explicit-any 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any 
+        users?.forEach(async (user: { ID: number; qrData: string; [key: string]: string | any }) => { 
           const newQrStruct: QRCodeData = {
             name: user.NOME,
             id: user.ID,
-            data: user[qrData],
+            data: user[qrData].toString(),
             version: Number.parseInt(qrVersion),
             qrColor,
             qrBgColor,
             backgroundImg,
             watermark, 
           };
+          //console.log("NEW QR STRUCT", newQrStruct)
 
-          //* Gera o QR Code e retorna um link com a imagem
-          const qrCodeUrl = await generateQrCode(newQrStruct) 
-          // * Gera a imagem do Ingresso e salva 
-          const ticketImageUrl = await saveTicketImage(qrCodeUrl, newQrStruct)
+          const mainGeneration = async () => {
+            //* Gera o QR Code e retorna um link com a imagem
+            const qrCodeUrl = await generateQrCode(newQrStruct) 
+            // * Gera a imagem do Ingresso e salva 
+            const ticketImageUrl = await saveTicketImage(qrCodeUrl, newQrStruct)
 
-          //setGeneratedQRCodes((prev) => [newQrStruct, ...prev]);
-          setGeneratedQRCodes((prev) => [{ ...newQrStruct, ticketUrl: ticketImageUrl }, ...prev]);
+            setGeneratedQRCodes((prev) => [{ ...newQrStruct, ticketUrl: ticketImageUrl }, ...prev]);
+          }
+          mainGeneration()
         })
       })
     } catch(err) {
@@ -202,7 +208,7 @@ const page: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="watermark">Marca D'Água  (opicional)</Label>
+            <Label htmlFor="watermark">Marca DÁgua  (opicional)</Label>
             <Input
               id="watermark"
               type="file"
@@ -230,4 +236,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default Page;

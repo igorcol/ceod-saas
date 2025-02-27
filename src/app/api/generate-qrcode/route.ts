@@ -11,6 +11,7 @@ export async function POST(req: Request) {
 
         const qrCodeData : QRCodeData = {
             id: body.id,
+            name: body.nome,
             data: body.data,
             version: body.version,
             qrColor: body.qrColor,

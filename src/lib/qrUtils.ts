@@ -1,6 +1,5 @@
 "use server"
 import QRCode  from 'qrcode'
-import { Buffer } from "buffer";
 
 // Estrutura para a criação do QrCode
 export interface QRCodeData { 
@@ -17,7 +16,6 @@ export interface QRCodeData {
 
 // Cria o QR code e salva em BUFFER (variavel)
 export async function CreateAndBufferQrCode( QRData:QRCodeData ): Promise<string> {
-    
     try {
         const DATA = QRData.data
         const VERSION = QRData.version

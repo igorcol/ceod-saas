@@ -5,7 +5,7 @@ import path from 'path'
 
 export async function GET() {
     const uploadsPath = path.join(process.cwd(), 'public/uploads')
-    const zipPath = path.join(process.cwd(), 'public', 'ingressos.zip')
+    const zipPath = path.join(process.cwd(), 'public/uploads', 'ingressos.zip')
 
     if (fs.existsSync(zipPath)) {
         fs.unlinkSync(zipPath)
