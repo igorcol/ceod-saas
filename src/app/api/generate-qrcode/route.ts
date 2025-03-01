@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { CreateAndBufferQrCode, QRCodeData } from "@/lib/qrUtils";
 
+// * GERA A IMAGEM
+
 export async function POST(req: Request) {
     try {
         const body = await req.json()
@@ -19,6 +21,7 @@ export async function POST(req: Request) {
             backgroundImg: body.backgroundImg,
             watermark: body.watermark
         }
+
         
         const qrCodeBase64 = await CreateAndBufferQrCode(qrCodeData); // Gera o QR Code em base64
 

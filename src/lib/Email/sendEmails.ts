@@ -1,5 +1,5 @@
 
-import { EmailBody } from '../emailBody';
+import { EmailBody } from './emailBody';
 import path from 'path';
 import { imagePath, transporter } from './config';
 

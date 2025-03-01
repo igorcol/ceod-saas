@@ -21,12 +21,13 @@ import { saveTicketImage } from '@/lib/imageUtils'
 
 const Page: React.FC = () => {
   const [qrVersion, setQRVersion] = useState("4");
-  const [qrData, setQRData] = useState("CODIGO");
+  const [qrData, setQRData] = useState("_id");
   const [backgroundImg, setBackgroundImg] = useState<string | null>(null);
   const [watermark, setWatermark] = useState<string | null>(null);
+
   const [generatedQRCodes, setGeneratedQRCodes] = useState<QRCodeData[]>([]);
 
-  const [qrColor, setQrColor] = useState('#FFFFFF')
+  const [qrColor, setQrColor] = useState('#000000')
   const [qrBgColor, setQrBgColor] = useState('#00000000')
 
   const [isOnline, setIsOnline] = useState(true);
@@ -85,7 +86,7 @@ const Page: React.FC = () => {
         users?.forEach(async (user: { ID: number; qrData: string; [key: string]: string | any }) => { 
           const newQrStruct: QRCodeData = {
             name: user.NOME,
-            id: user.ID,
+            id: user.ID, // ID SISDM
             data: user[qrData].toString(),
             version: Number.parseInt(qrVersion),
             qrColor,
@@ -97,13 +98,25 @@ const Page: React.FC = () => {
 
           const mainGeneration = async () => {
             //* Gera o QR Code e retorna um link com a imagem
-            const qrCodeUrl = await generateQrCode(newQrStruct) 
+            const qrCodeUrl = await generateQrCode(newQrStruct) // { qrCode: base64 }
             // * Gera a imagem do Ingresso e salva 
             const ticketImageUrl = await saveTicketImage(qrCodeUrl, newQrStruct)
 
             setGeneratedQRCodes((prev) => [{ ...newQrStruct, ticketUrl: ticketImageUrl }, ...prev]);
+            // {
+            //   name, = igor
+            //   data, = 1
+            //   caminhoDoIngresso png
+            // },
+            // {
+            //   name2,
+            //   data, = 2
+            //   caminhoDoIngresso2 png
+            // }
           }
           mainGeneration()
+          console.log("🟣 INGRESSOS GERADOS")
+          console.log(`\n\n`, generatedQRCodes)
         })
       })
     } catch(err) {
@@ -147,12 +160,12 @@ const Page: React.FC = () => {
 
           <div className="space-y-2">
             <Label htmlFor="qr-data">Dado</Label>
-            <Select onValueChange={setQRData} defaultValue="CODIGO">
+            <Select onValueChange={setQRData} defaultValue="_id">
               <SelectTrigger id="qr-data">
                 <SelectValue placeholder="Dados do QR Code" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ID">Id</SelectItem>
+                <SelectItem value="_id">Id</SelectItem>
                 <SelectItem value="CODIGO">Código de inscrição</SelectItem>
                 <SelectItem value="NOME">Nome</SelectItem>
               </SelectContent>

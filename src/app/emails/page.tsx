@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 export default function Page() {
 
   async function handleSendEmails() {
-    console.log(">> handleSendEmails");
     /* 
     Para cada USER (dar fetch em user):
         Pegar email dele
@@ -20,9 +19,15 @@ export default function Page() {
       const response = await fetch(`/api/send-emails`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emails: emails, ticketNames: ticketNames }),
+        body: JSON.stringify(
+          { 
+            emails: emails, 
+            ticketNames: ticketNames 
+          }
+        ),
       });
       const data = await response.json()
+      console.log(data.results)
       if (data.ok) {
         alert('✅ Emails Enviados Com Sucesso!')
       }
