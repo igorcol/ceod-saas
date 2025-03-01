@@ -24,22 +24,21 @@ const imagePath = './public/uploads/'
 
 const transporter = nodemailer.createTransport({
     secure: true,
-    host: 'smtp.gmail.com',
-    port: 465,
+    host: process.env.EMAIL_SERVER,
+    port: Number(process.env.EMAIL_PORT),
     auth: {
-        user: 'igor.colombini@gmail.com', // !!!! - PASSAR PARA O .ENV
-        pass: 'wcfa lsgq jezo dacf',      // !!!! - PASSAR PARA O .ENV  
-    }
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,     
+    },
 });
 
 export async function SendEmail(to: string, ticketName: string) {
     console.log('\n -> Enviando Email para', to)
 
     const subject = 'Seu ingresso para o IV CEOD-SP está aqui! 🎟️'
-    const from = '"CEOD Sorocaba" <igor.colombini@gmail.com>'
 
     const mailOptions = {
-        from: from, // Seu e-mail
+        from: process.env.EMAIL_FROM, // Seu e-mail
         to: to,
         subject: subject,
         html: EmailBody,
@@ -55,7 +54,7 @@ export async function SendEmail(to: string, ticketName: string) {
 
     try {
         await transporter.sendMail(mailOptions)
-        console.log("✔️ Email Enviado")
+        console.log("✔️  Email Enviado")
     }
     catch (error) {
         console.log('Erro ao enviar email', error)
