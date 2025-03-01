@@ -23,7 +23,7 @@ const imagePath = './public/uploads/'
 
 
 const transporter = nodemailer.createTransport({
-    secure: true,
+    //secure: true, // ! DEIXAR TRUE PARA GOOGLE
     host: process.env.EMAIL_SERVER,
     port: Number(process.env.EMAIL_PORT),
     auth: {
