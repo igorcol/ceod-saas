@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 const EmailBody = "<h1>teste ignora</h1>"
 
-const tem_EmailBody = 
+const temp_EmailBody = 
 `
     <head>
     <meta charset="UTF-8">
