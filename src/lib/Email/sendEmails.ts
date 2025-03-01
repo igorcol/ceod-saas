@@ -45,7 +45,7 @@ export async function SendEmail(to: string, ticketName: string) {
     try {
         await transporter.sendMail(mailOptions)
         console.log("✔️  Email Enviado")
-        return { sucess: true}
+        return { email: to, sucess: true }
     }
     catch (error) {
         console.log('[sendEmail] - Erro ao enviar email', error)

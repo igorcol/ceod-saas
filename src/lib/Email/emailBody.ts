@@ -1,4 +1,6 @@
-const EmailBody = 
+const EmailBody = "<h1>teste ignora</h1>"
+
+const tem_EmailBody = 
 `
     <head>
     <meta charset="UTF-8">

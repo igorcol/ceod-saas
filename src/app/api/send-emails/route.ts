@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     try {
         const DATA = await req.json()
-        const { emails, ticketNames } = DATA
         /*
             DATA:  
             {
@@ -15,20 +14,22 @@ export async function POST(req: Request) {
             }
         */
 
-        if(!emails || !Array.isArray(emails)) {
+        if(!DATA || !Array.isArray(DATA)) {
             return NextResponse.json({ error: "Lista de e-mails inválida" }, { status: StatusCodes.BAD_REQUEST });
-        }
-
-        if (!ticketNames || !Array.isArray(ticketNames)) {
-            return NextResponse.json({ error: "Lista de ingressos inválida" }, { status: StatusCodes.BAD_REQUEST });
         }
 
         // * Enviar e-mails
         const results = await Promise.all(
-            emails.map((email, index) => SendEmail(email, ticketNames[index]))
+            DATA.map((person) => SendEmail(person.EMAIL, person["_id"]))
         );
 
-        return NextResponse.json({ message: "E-mails enviados", results });
+        const failedEmails = results.filter((email) => email.success = false )
+        failedEmails.forEach(email => console.log("❌ Erro ao enviar para -> ", email.email))
+
+        return NextResponse.json(
+            ({ message: "E-mails enviados", results})
+        ); 
+
 
     } 
     catch (error) {
