@@ -1,5 +1,7 @@
-import nodemailer from 'nodemailer'
-import { EmailBody } from './emailBody';
+
+import { EmailBody } from '../emailBody';
+import path from 'path';
+import { imagePath, transporter } from './config';
 
 /* 
 ! ========================= !!! ATENÇÃO !!! ========================= 
@@ -19,35 +21,23 @@ import { EmailBody } from './emailBody';
 ! =================================================================== 
 */
 
-const imagePath = './public/uploads/'
 
-
-const transporter = nodemailer.createTransport({
-    //secure: true, // ! DEIXAR TRUE PARA GOOGLE
-    host: process.env.EMAIL_SERVER,
-    port: Number(process.env.EMAIL_PORT),
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,     
-    },
-});
 
 export async function SendEmail(to: string, ticketName: string) {
     console.log('\n -> Enviando Email para', to)
 
-    const subject = 'Seu ingresso para o IV CEOD-SP está aqui! 🎟️'
+    const emailSubject = 'Seu ingresso para o IV CEOD-SP está aqui! 🎟️'
 
     const mailOptions = {
-        from: process.env.EMAIL_FROM, // Seu e-mail
-        to: to,
-        subject: subject,
+        from: process.env.EMAIL_FROM, 
+        to,
+        subject: emailSubject,
         html: EmailBody,
         attachments: [
             {
-                filename: 'ingresso_ceod.png',
-                path: imagePath + ticketName + '.png',
-                contentType: 'image/png',
-                cid: 'ingresso_ceod'
+                filename: `ingresso_ceod_${ticketName}.png`,
+                path: path.join(imagePath, `${ticketName}.png`),
+                contentType: 'image/png'
             }
         ],
     };
@@ -55,8 +45,10 @@ export async function SendEmail(to: string, ticketName: string) {
     try {
         await transporter.sendMail(mailOptions)
         console.log("✔️  Email Enviado")
+        return { sucess: true}
     }
     catch (error) {
-        console.log('Erro ao enviar email', error)
+        console.log('[sendEmail] - Erro ao enviar email', error)
+        return { success: false, error: error}
     }
 }

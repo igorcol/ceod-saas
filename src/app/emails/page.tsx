@@ -10,23 +10,28 @@ export default function Page() {
         Pegar email dele
         Enviar o Email
     */
-   const temp_mails = 'igor.colombini@gmail.com'
+   const emails = [
+    "igor.colombini@gmail.com",
+    "fabiorcolombini@gmail.com"
+    ]
+   const ticketNames = ['1', '2']
 
     try {
       const response = await fetch(`/api/send-emails`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({emails: temp_mails}),
+        body: JSON.stringify({ emails: emails, ticketNames: ticketNames }),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          `[sendEmails] Erro ao enviar Email: ${errorData.error}`
-        );
+      const data = await response.json()
+      if (data.ok) {
+        alert('✅ Emails Enviados Com Sucesso!')
+      }
+      else {
+        alert(`❌ [handleSendEmails] Erro: ${data}`)
       }
 
-    } catch (err) {
-      console.error("Erro ao gerar QR Code:", err);
+    } catch (error) {
+      console.error("Erro ao enviar e-mails:", error);
     }
   }
 

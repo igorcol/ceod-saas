@@ -1,17 +1,38 @@
-import { SendEmail } from "@/lib/sendEmails";
+import { SendEmail } from "@/lib/Email/sendEmails";
+import StatusCodes from "http-status-codes";
+import { NextResponse } from "next/server";
 
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        if (!body || !body.emails) {
-            return new Response('Invalid request body', { status: 400 });
+        const DATA = await req.json()
+        const { emails, ticketNames } = DATA
+        /*
+            DATA:  
+            {
+                emails: ['',''],
+                ticketNames: ['','']
+            }
+        */
+
+        if(!emails || !Array.isArray(emails)) {
+            return NextResponse.json({ error: "Lista de e-mails inválida" }, { status: StatusCodes.BAD_REQUEST });
         }
 
-        await SendEmail(body.emails, '2');
-        return new Response('Emails sent successfully', { status: 200 });
-    } catch (error) {
-        console.error('Error sending emails:', error);
-        return new Response('Internal Server Error', { status: 500 });
+        if (!ticketNames || !Array.isArray(ticketNames)) {
+            return NextResponse.json({ error: "Lista de ingressos inválida" }, { status: StatusCodes.BAD_REQUEST });
+        }
+
+        // * Enviar e-mails
+        const results = await Promise.all(
+            emails.map((email, index) => SendEmail(email, ticketNames[index]))
+        );
+
+        return NextResponse.json({ message: "E-mails enviados", results });
+
+    } 
+    catch (error) {
+        console.error("❌ send-emails | Erro na API:", error);
+        return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });
     }
 }
