@@ -18,6 +18,7 @@ import QrTable from './_components/qr-table'
 import { fetchData } from "@/lib/api";
 import { QRCodeData } from "@/lib/qrUtils"
 import { saveTicketImage } from '@/lib/imageUtils'
+import { deleteAllFiles } from "@/lib/deleteAllFiles";
 
 const Page: React.FC = () => {
   const [qrVersion, setQRVersion] = useState("4");
@@ -81,7 +82,9 @@ const Page: React.FC = () => {
     setGeneratedQRCodes([]) // zera a lista de ingressos gerados
     try {
       fetchData('users').then(async (users) => {
-        // ! Arummar @typescript-eslint/no-explicit-any 
+
+        await deleteAllFiles('public/uploads') // Apaga todos os ingressos salvos
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any 
         users?.forEach(async (user: { ID: number; qrData: string; [key: string]: string | any }) => { 
           const newQrStruct: QRCodeData = {
