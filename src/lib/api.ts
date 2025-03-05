@@ -1,10 +1,10 @@
 // TODO: fetchUsers()
 
-let API_URL = process.env.NEXT_PUBLIC_API_URL
-let API_PORT = process.env.NEXT_PUBLIC_API_PORT
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+//const API_PORT = process.env.NEXT_PUBLIC_API_PORT
 
 interface ApiResponse {
-    [key: string]: any;
+    [key: string]: string | number | boolean | object | null;
 }
 
 // Fetch
@@ -17,7 +17,8 @@ async function fetchData(get_data:string)  {
 async function GetEmailsFromDb() {
     try {
         // Fazendo uma requisição GET para a API
-        const response = await fetch('http://localhost:3030/inscritos');
+        const api_users_emails_url = `${API_URL}/users/emails`
+        const response = await fetch(api_users_emails_url);
         
         if (!response.ok) {
             throw new Error('Erro na requisição: ' + response.statusText);
@@ -29,10 +30,7 @@ async function GetEmailsFromDb() {
             throw new Error('Dados de inscritos não encontrados');
         }
 
-        // Extraindo apenas os e-mails dos inscritos
-        const emails: string[] = data.map((inscrito: { EMAIL: string }) => inscrito.EMAIL);
-        return emails; // Retorna os e-mails
-
+        return data; 
     } catch (error) {
         console.error('Erro:', error);
     }
@@ -42,8 +40,9 @@ async function GetEmailsFromDb() {
 async function GetFromDb(get_data: string): Promise<ApiResponse | undefined> {
     try {
         
-        // Fazendo uma requisição GET para a API | https://localhost:3030/users
-        let api_users_url = `${API_URL}:${API_PORT}/${get_data}`
+        // * Fazendo uma requisição GET para a API
+        //const api_users_url = `${API_URL}:${API_PORT}/${get_data}`
+        const api_users_url = `${API_URL}/${get_data}`
         console.log(`Fetching "${get_data}" from ${api_users_url}`)
 
         const response = await fetch(api_users_url);
