@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-const temp_EmailBody = "<h1>teste ignora</h1>"
+const EmailBody = "<h1>teste ignora</h1>"
 
-const EmailBody = `
-<head>
+const temp_EmailBody = 
+`
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seu ingresso para o CREOD-SP</title>
+    <title>Seu ingresso para o IV CEOD-SP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,29 +47,25 @@ const EmailBody = `
 </head>
 <body>
     <div class="content">
-        <h1>Seu ingresso para o CREOD-SP está aqui! 🎟️</h1>
+        <h1>Seu ingresso para o IV CEOD-SP está aqui! 🎟️</h1>
         <p>Olá! 👋</p>
-        <p>O Congresso Regional da Macro Região K está chegando, e estamos muito felizes em contar com a sua presença!</p>
+        <p>O IV Congresso Estadual da Ordem DeMolay de São Paulo está chegando, e estamos muito felizes em contar com a sua presença!!.</p>
 
-        <p><strong>Data:</strong> 22 de MARÇO de 2025</p>
-        <p><strong>Local:</strong> Av. Peixoto Gomide, 198; Centro, Itapetininga - SP.</p>
-        <p><strong>Check-In:</strong> 07:00 às 08:30</p>
+        <p><strong>Data:</strong> 27, 28 e 29 de JUNHO de 2025</p>
+        <p><strong>Local:</strong> Faculdade de Engenharia de Sorocaba - Rodovia Senador José Ermírio de Moraes, 1425 - Jardim Constantino Matucci, Sorocaba - SP, 18085-784</p>
+        <p><strong>Início do Check-In:</strong> Sexta (28) às 16:00 - Prédio L </p>
 
-        <p>Prepare-se para um dia repleto de aprendizado, integração e fortalecimento dos laços fraternais com irmãos de toda nossa macro região.</p>
+        <p>Prepare-se para uma programação especial, cheia de palestras inspiradoras, competições emocionantes e a oportunidade de fortalecer laços com irmãos de todo o estado.</p>
 
         <p class="important">IMPORTANTE: O seu ingresso para o evento está em anexo a este e-mail. Ele deverá ser apresentado no check-in, seja impresso ou na tela do seu celular, para garantir sua entrada.</p>
 
-        <a href="https://www.instagram.com/32regiaosp" class="cta">Ver detalhes do evento</a>
+        <a href="https://www.instagram.com/demolay.sp?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="cta">Ver detalhes do evento</a>
 
         <p class="footer">Nos vemos em breve! Qualquer dúvida, estamos à disposição.</p>
-        <p class="footer">Fraternalmente, <br> Comissão Organizadora do CREOD-SP</p>
-        <p> </p>
-        <p class="footer">Sofware desenvolvido pelo Irmão Sênior Igor Colombini - ID: 92321</p>
+        <p class="footer">Fraternalmente, <br> Comissão Organizadora do IV CEOD-SP</p>
     </div>
 </body>
-
 `
-
 
 export {
     EmailBody

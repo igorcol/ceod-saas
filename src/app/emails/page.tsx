@@ -17,17 +17,13 @@ export default function Page() {
     const emails = await GetEmailsFromDb();
     const temp_emails = [
       {
-      "_id": "67c4baba4f422570d47ae99d",
-      "EMAIL": "igor.colombini@gmail.com"
+        _id: "67c4baba4f422570d47ae99d",
+        EMAIL: "igor.colombini@gmail.com",
       },
       {
-      "_id": "67c4baba4f422570d47ae99d",
-      "EMAIL": "fabiorcolombini@gmail.com"
+        _id: "67c4baba4f422570d47ae99e",
       },
-      {
-      "_id": "67c4baba4f422570d47ae99e",
-      },
-    ]
+    ];
     const results = await ApiSendEmails(temp_emails);
 
     if (results && results.results) {
@@ -47,16 +43,23 @@ export default function Page() {
 
         {sentEmails.map((email) => {
           return (
-            <div key={email.email} className="mt-3">
-              <div
-                className=" w-[screen] flex flex-row border border-border p-2 gap-x-3"
-              >
+            <div key={email.email} className="mt-3 space-y-1">
+              <div className=" w-[screen] flex flex-row border border-border p-2 gap-x-3">
                 <p className="border-r border-border pr-3">
                   {email.success ? "✅" : "❌"}
                 </p>
-                <p>{email.email ? email.email : "- Usuário sem Email -"}</p>
+                <div className="flex flex-row items-center justify-between w-screen">
+                  <p>{email.email ? email.email : "- Usuário sem Email -"}</p>
+                  <p className="text-xs text-muted-foreground">ID DO USUARIO</p>
+                </div>
               </div>
-              <div>{email.error && <p className="text-xs text-muted-foreground">{email.error.response}</p>}</div>
+              <div>
+                {email.error && (
+                  <p className="text-xs text-muted-foreground">
+                    {email.error.response}
+                  </p>
+                )}
+              </div>
             </div>
           );
         })}
