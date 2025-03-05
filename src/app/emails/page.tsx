@@ -7,7 +7,24 @@ export default function Page() {
 
   async function handleSendEmails() {
     const emails = await GetEmailsFromDb();
-    await ApiSendEmails(emails)
+    const results = await ApiSendEmails(emails);
+
+    interface EmailResult {
+      email: string;
+      success: boolean;
+      error?: { response: string };
+    }
+
+    if (results && results.results) {
+      results.results.forEach((result: EmailResult) => {
+        if (result.success) {
+          console.log(`✔️\t${result.email}`);
+        } else {
+          const error = result.error as { response: string };
+          console.log(`❌\t${result.email}\t->\t${error.response}`);
+        }
+      });
+    }
   }
 
   return (

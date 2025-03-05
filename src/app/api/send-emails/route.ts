@@ -14,7 +14,7 @@ export async function POST(req: Request) {
             }
         */
 
-        if(!DATA || !Array.isArray(DATA)) {
+        if (!DATA || !Array.isArray(DATA)) {
             return NextResponse.json({ error: "Lista de e-mails inválida" }, { status: StatusCodes.BAD_REQUEST });
         }
 
@@ -23,15 +23,23 @@ export async function POST(req: Request) {
             DATA.map((person) => SendEmail(person.EMAIL, person["_id"]))
         );
 
-        const failedEmails = results.filter((email) => email.success = false )
-        failedEmails.forEach(email => console.log("❌ Erro ao enviar para -> ", email.email))
+        // LOG NO SERVIDOR (VS CODE)
+        console.log("\n✅ RESULTADOS DOS E-MAILS ENVIADOS:");
+        results.forEach((result) => {
+            if (result.success) {
+                console.log(`✔️\t${result.email}`);
+            } else {
+                const error = result.error as { response: string };
+                console.log(`❌\t${result.email}\t->\t${error.response}`);
+            }
+        });
 
         return NextResponse.json(
-            ({ message: "E-mails enviados", results})
-        ); 
+            ({ message: "E-mails enviados", results })
+        );
 
 
-    } 
+    }
     catch (error) {
         console.error("❌ send-emails | Erro na API:", error);
         return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });

@@ -43,12 +43,12 @@ export async function SendEmail(to: string, ticketName: string) {
 
     try {
         await transporter.sendMail(mailOptions)
-        console.log(`✔️\t ${mailOptions.to} \t |\t Enviado`)
+        //console.log(`✔️\t ${mailOptions.to} \t |\t Enviado`)
         return { email: to, sucess: true }
     }
     catch (error) {
         //console.log('[sendEmail] - Erro ao enviar email', error)
-        console.log(`❌\t${mailOptions.to ? mailOptions.to : 'Usuário sem email'} \t\t |\t Erro ao enviar`)
+        //console.log(`❌\t${mailOptions.to ? mailOptions.to : 'Usuário sem email'} \t\t |\t Erro ao enviar`)
         return { email: to, success: false, error: error}
     }
 }
