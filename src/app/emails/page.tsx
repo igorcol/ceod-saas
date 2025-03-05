@@ -19,15 +19,6 @@ export default function Page() {
 
     if (results && results.results) {
       SetSentEmails(results.results);
-
-      // results.results.forEach((result: EmailResult) => {
-      //   if (result.success) {
-      //     console.log(`✔️\t${result.email}`);
-      //   } else {
-      //     const error = result.error as { response: string };
-      //     console.log(`❌\t${result.email}\t->\t${error.response}`);
-      //   }
-      // });
     }
   }
 
