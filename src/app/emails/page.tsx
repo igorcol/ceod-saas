@@ -7,7 +7,7 @@ export default function Page() {
 
   async function handleSendEmails() {
     const emails = await GetEmailsFromDb();
-    ApiSendEmails(emails)
+    await ApiSendEmails(emails)
   }
 
   return (

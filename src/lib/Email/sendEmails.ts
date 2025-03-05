@@ -24,7 +24,6 @@ import { imagePath, transporter } from './config';
 
 
 export async function SendEmail(to: string, ticketName: string) {
-    console.log('\n -> Enviando Email para', to)
 
     const emailSubject = 'Seu ingresso para o IV CEOD-SP está aqui! 🎟️'
 
@@ -44,11 +43,12 @@ export async function SendEmail(to: string, ticketName: string) {
 
     try {
         await transporter.sendMail(mailOptions)
-        console.log("✔️  Email Enviado")
+        console.log(`✔️\t ${mailOptions.to} \t |\t Enviado`)
         return { email: to, sucess: true }
     }
     catch (error) {
-        console.log('[sendEmail] - Erro ao enviar email', error)
-        return { success: false, error: error}
+        //console.log('[sendEmail] - Erro ao enviar email', error)
+        console.log(`❌\t${mailOptions.to ? mailOptions.to : 'Usuário sem email'} \t\t |\t Erro ao enviar`)
+        return { email: to, success: false, error: error}
     }
 }
