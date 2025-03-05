@@ -44,7 +44,7 @@ export async function SendEmail(to: string, ticketName: string) {
     try {
         await transporter.sendMail(mailOptions)
         //console.log(`✔️\t ${mailOptions.to} \t |\t Enviado`)
-        return { email: to, sucess: true }
+        return { email: to, success: true }
     }
     catch (error) {
         //console.log('[sendEmail] - Erro ao enviar email', error)

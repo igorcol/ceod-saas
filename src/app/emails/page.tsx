@@ -15,7 +15,20 @@ export default function Page() {
 
   async function handleSendEmails() {
     const emails = await GetEmailsFromDb();
-    const results = await ApiSendEmails(emails);
+    const temp_emails = [
+      {
+      "_id": "67c4baba4f422570d47ae99d",
+      "EMAIL": "igor.colombini@gmail.com"
+      },
+      {
+      "_id": "67c4baba4f422570d47ae99d",
+      "EMAIL": "fabiorcolombini@gmail.com"
+      },
+      {
+      "_id": "67c4baba4f422570d47ae99e",
+      },
+    ]
+    const results = await ApiSendEmails(temp_emails);
 
     if (results && results.results) {
       SetSentEmails(results.results);

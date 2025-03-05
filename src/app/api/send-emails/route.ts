@@ -30,7 +30,7 @@ export async function POST(req: Request) {
                 console.log(`✔️\t${result.email}`);
             } else {
                 const error = result.error as { response: string };
-                console.log(`❌\t${result.email}\t->\t${error.response}`);
+                console.log(`❌\t${result.email}\t->\t${error}`);
             }
         });
 
