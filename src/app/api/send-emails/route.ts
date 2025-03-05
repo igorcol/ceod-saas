@@ -8,10 +8,12 @@ export async function POST(req: Request) {
         const DATA = await req.json()
         /*
             DATA:  
-            {
-                emails: ['',''],
-                ticketNames: ['','']
-            }
+            [
+                {
+                    '_id': '0934320348',
+                    'EMAIL': 'm@example.com'
+                },
+            ]
         */
 
         if (!DATA || !Array.isArray(DATA)) {
@@ -27,10 +29,10 @@ export async function POST(req: Request) {
         console.log("\n✅ RESULTADOS DOS E-MAILS ENVIADOS:");
         results.forEach((result) => {
             if (result.success) {
-                console.log(`✔️\t${result.email}`);
+                console.log(`✔️\t${result.user.email}`);
             } else {
                 const error = result.error as { response: string };
-                console.log(`❌\t${result.email}\t->\t${error}`);
+                console.log(`❌\t${result.user.email}\t->\t${error}`);
             }
         });
 

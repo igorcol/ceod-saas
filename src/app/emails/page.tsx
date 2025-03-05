@@ -6,7 +6,10 @@ import { useEffect, useState } from "react";
 
 export default function Page() {
   interface EmailResult {
-    email: string;
+    user: {
+      email: string,
+      id: string,
+    }
     success: boolean;
     error?: { response: string };
   }
@@ -43,14 +46,14 @@ export default function Page() {
 
         {sentEmails.map((email) => {
           return (
-            <div key={email.email} className="mt-3 space-y-1">
+            <div key={email.user.id} className="mt-3 space-y-1">
               <div className=" w-[screen] flex flex-row border border-border p-2 gap-x-3">
                 <p className="border-r border-border pr-3">
                   {email.success ? "✅" : "❌"}
                 </p>
                 <div className="flex flex-row items-center justify-between w-screen">
-                  <p>{email.email ? email.email : "- Usuário sem Email -"}</p>
-                  <p className="text-xs text-muted-foreground">ID DO USUARIO</p>
+                  <p>{email.user.email ? email.user.email : "- Usuário sem Email -"}</p>
+                  <p className="text-xs text-muted-foreground">{email.user.id}</p>
                 </div>
               </div>
               <div>
