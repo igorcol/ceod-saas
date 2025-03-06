@@ -5,6 +5,8 @@ import { GetEmailsFromDb } from "@/lib/api";
 import { ApiSendEmails } from "@/lib/Email/_requests/SendEmails";
 import { useEffect, useState } from "react";
 
+  // TODO : ----------> ALTERAR EMAILRECEIVED PARA TRUE
+
 export default function Page() {
   interface EmailResult {
     user: {
@@ -17,9 +19,7 @@ export default function Page() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sentEmails, SetSentEmails] = useState<EmailResult[]>([]);
-  const [statusMessage, setStatusMessage] = useState<string>(
-    "Nenhum email enviado ainda."
-  );
+  const [statusMessage, setStatusMessage] = useState<string>("Nenhum email enviado ainda.");
 
   async function handleSendEmails() {
     setIsLoading(true);
