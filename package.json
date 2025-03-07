@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start-api:build": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm start",
+    "start-api:prod": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:prod",
+    "start-api:dev": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:dev"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.6",
