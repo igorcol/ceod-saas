@@ -242,7 +242,7 @@ const Page: React.FC = () => {
         </Button>
       </div>
 
-      <QrTable generatedQRCodes={generatedQRCodes} />
+      <QrTable />
     </div>
   );
 };
