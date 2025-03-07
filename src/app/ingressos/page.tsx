@@ -14,10 +14,10 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import QrTable from './_components/qr-table'
+import QrTable from "./_components/qr-table";
 import { fetchData } from "@/lib/api";
-import { QRCodeData } from "@/lib/qrUtils"
-import { saveTicketImage } from '@/lib/imageUtils'
+import { QRCodeData } from "@/lib/qrUtils";
+import { saveTicketImage } from "@/lib/imageUtils";
 import { deleteAllFiles } from "@/lib/deleteAllFiles";
 
 const Page: React.FC = () => {
@@ -28,11 +28,10 @@ const Page: React.FC = () => {
 
   const [generatedQRCodes, setGeneratedQRCodes] = useState<QRCodeData[]>([]);
 
-  const [qrColor, setQrColor] = useState('#000000')
-  const [qrBgColor, setQrBgColor] = useState('#00000000')
+  const [qrColor, setQrColor] = useState("#000000");
+  const [qrBgColor, setQrBgColor] = useState("#00000000");
 
   const [isOnline, setIsOnline] = useState(true);
-
 
   const handleFileUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -49,95 +48,90 @@ const Page: React.FC = () => {
   };
 
   // * Chama a função na API para Gerar o QR CODE
-  const generateQrCode = async (QRData : QRCodeData) => {
+  const generateQrCode = async (QRData: QRCodeData) => {
     try {
       const response = await fetch(`/api/generate-qrcode`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(QRData),
-      })
+      });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`[generateQrCode] Erro ao gerar QR Code: ${errorData.error}`);
+        throw new Error(
+          `[generateQrCode] Erro ao gerar QR Code: ${errorData.error}`
+        );
       }
 
-      const jsonResponse = await response.json()
+      const jsonResponse = await response.json();
 
       if (!jsonResponse.qrCode) {
         throw new Error("QR Code não foi gerado corretamente");
       }
 
       return `data:image/png;base64,${jsonResponse.qrCode}`;
-
     } catch (err) {
       console.error("Erro ao gerar QR Code:", err);
-      return ""
+      return "";
     }
-  }
+  };
 
   // * GERAÇÃO DO INGRESSO
   const handleGenerateTicket = async () => {
     // Recebe a lista de usuarios vindo da API
     // Para cada usuario, gera um QRcode -> Processa a imagem -> Salva a imagem
-    setGeneratedQRCodes([]) // zera a lista de ingressos gerados
+    setGeneratedQRCodes([]); // zera a lista de ingressos gerados
     try {
-      fetchData('users').then(async (users) => {
+      const users = await fetchData("users");
+      if (!users || !Array.isArray(users)) {
+        console.error("Erro: A resposta da API não é uma lista válida de usuários.");
+        return;
+      }
 
-        await deleteAllFiles('public/uploads') // Apaga todos os ingressos salvos
+      await deleteAllFiles("public/uploads"); // Apaga todos os ingressos salvos
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any 
-        users?.forEach(async (user: { ID: number; qrData: string; [key: string]: string | any }) => { 
+
+      const generatedTickets = await Promise.all(
+        users.map(async (user: { ID: number; CODIGO: string; NOME: string; _id: string }) => {
           const newQrStruct: QRCodeData = {
             name: user.NOME,
             id: user.ID, // ID SISDM
-            data: user[qrData].toString(),
+            data: (user[qrData as keyof typeof user] as unknown as string).toString(),
             version: Number.parseInt(qrVersion),
             qrColor,
             qrBgColor,
             backgroundImg,
-            watermark, 
+            watermark,
           };
-          //console.log("NEW QR STRUCT", newQrStruct)
 
-          const mainGeneration = async () => {
-            //* Gera o QR Code e retorna um link com a imagem
-            const qrCodeUrl = await generateQrCode(newQrStruct) // { qrCode: base64 }
-            // * Gera a imagem do Ingresso e salva 
-            const ticketImageUrl = await saveTicketImage(qrCodeUrl, newQrStruct)
+          const qrCodeUrl = await generateQrCode(newQrStruct)
+          const ticketImageUrl = saveTicketImage(qrCodeUrl, newQrStruct)
 
-            setGeneratedQRCodes((prev) => [{ ...newQrStruct, ticketUrl: ticketImageUrl }, ...prev]);
-            // {
-            //   name, = igor
-            //   data, = 1
-            //   caminhoDoIngresso png
-            // },
-            // {
-            //   name2,
-            //   data, = 2
-            //   caminhoDoIngresso2 png
-            // }
-          }
-          mainGeneration()
-          console.log("🟣 INGRESSOS GERADOS")
-          console.log(`\n\n`, generatedQRCodes)
+          return {...newQrStruct, ticketUrl: ticketImageUrl}
         })
-      })
-    } catch(err) {
-      console.log("Error gerando ingresso: ",err)
+      );
+
+      setGeneratedQRCodes(generatedTickets)
+      console.log("🟣 INGRESSOS GERADOS", generatedTickets);
+
+    } catch (err) {
+      console.log("Error gerando ingresso: ", err);
     }
-  }
+  };
 
   useEffect(() => {
     setGeneratedQRCodes(generatedQRCodes);
   }, [generatedQRCodes]);
-
 
   return (
     <div className="space-y-6 w-full overflow-hidden ">
       <h1 className="text-3xl font-bold">Gerar Ingressos</h1>
 
       <div className="flex items-center space-x-2">
-        <Switch id="data-source" checked={isOnline} onCheckedChange={setIsOnline} />
+        <Switch
+          id="data-source"
+          checked={isOnline}
+          onCheckedChange={setIsOnline}
+        />
         <Label>
           {isOnline ? "Banco de dados / API" : "Arquivo JSON local"}
         </Label>
@@ -147,7 +141,7 @@ const Page: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Versão do QR Code</Label>
-            <Select value={qrVersion} onValueChange={setQRVersion} >
+            <Select value={qrVersion} onValueChange={setQRVersion}>
               <SelectTrigger id="qr-version">
                 <SelectValue placeholder="Selecione a versão" />
               </SelectTrigger>
@@ -177,7 +171,7 @@ const Page: React.FC = () => {
 
           <div className="space-y-2">
             <Label>Cor do QR Code</Label>
-            <Select value={qrColor} onValueChange={setQrColor} >
+            <Select value={qrColor} onValueChange={setQrColor}>
               <SelectTrigger id="qr-version">
                 <SelectValue placeholder="Selecione a versão" />
               </SelectTrigger>
@@ -190,7 +184,7 @@ const Page: React.FC = () => {
           </div>
           <div className="space-y-2">
             <Label>Fundo do QR Code</Label>
-            <Select value={qrBgColor} onValueChange={setQrBgColor} >
+            <Select value={qrBgColor} onValueChange={setQrBgColor}>
               <SelectTrigger id="qr-version">
                 <SelectValue placeholder="Selecione a versão" />
               </SelectTrigger>
@@ -224,7 +218,7 @@ const Page: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="watermark">Marca DÁgua  (opicional)</Label>
+            <Label htmlFor="watermark">Marca DÁgua (opicional)</Label>
             <Input
               id="watermark"
               type="file"
@@ -243,11 +237,12 @@ const Page: React.FC = () => {
           </div>
         </div>
 
-        <Button className="hover:bg-red-800" onClick={handleGenerateTicket}>Criar QR Codes</Button>
+        <Button className="hover:bg-red-800" onClick={handleGenerateTicket}>
+          Criar QR Codes
+        </Button>
       </div>
 
-      <QrTable generatedQRCodes={generatedQRCodes}/>
-
+      <QrTable generatedQRCodes={generatedQRCodes} />
     </div>
   );
 };
