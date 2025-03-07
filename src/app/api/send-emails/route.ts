@@ -3,7 +3,7 @@ import StatusCodes from "http-status-codes";
 import { NextResponse } from "next/server";
 
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
     try {
         const DATA = await req.json()
         /*

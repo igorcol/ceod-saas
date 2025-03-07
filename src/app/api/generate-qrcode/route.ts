@@ -3,7 +3,7 @@ import { CreateAndBufferQrCode, QRCodeData } from "@/lib/qrUtils";
 
 // * GERA A IMAGEM
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
     try {
         const body = await req.json()
         

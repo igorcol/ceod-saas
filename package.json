@@ -7,6 +7,7 @@
     "lint": "next lint",
     "dev": "next dev --turbopack",
     "prod": "next start",
+    "start": "next start",
     "start-api:build": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm start",
     "start-api:prod": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:prod",
     "start-api:dev": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:dev"

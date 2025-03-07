@@ -3,7 +3,7 @@ import { GenerateQrImage } from "@/lib/imageUtils";
 import fs from 'fs'
 import path from 'path'
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
     try {
         const reqBody = await req.json()
         const {qrBuffer,backgroundImg,watermark,saveName} = reqBody

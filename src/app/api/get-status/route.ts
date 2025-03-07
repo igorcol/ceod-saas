@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
 
-export async function GET() {
+export async function GET(): Promise<Response> {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`);
         //console.log(`${process.env.NEXT_PUBLIC_API_URL}/health -> ${response.status}`);
