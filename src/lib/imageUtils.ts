@@ -1,6 +1,5 @@
 import {Jimp} from 'jimp';
 import { QRCodeData } from './qrUtils';
-import fs from 'fs';
 import path from 'path';
 
 
@@ -11,13 +10,8 @@ export async function GenerateQrImage(
   outputPath: `${string}.${string}`
 ) {
     try {
-      // console.log("📥 Processando imagem do ingresso...");
-      // console.log("🔹 qrBuffer:", qrBuffer ? "✅ OK" : "❌ Faltando");
-      // console.log("🔹 backImg:", backImg ? "✅ OK" : "❌ Faltando");
-      // console.log("🔹 watermark:", watermark ? "✅ OK" : "❌ Faltando");
-
       const backgroundPath = path.resolve("public/default-background.png");
-      const watermarkPath = path.resolve("public/default-watermark.png");
+      //const watermarkPath = path.resolve("public/default-watermark.png");
 
       // Função auxiliar para carregar a imagem a partir de Buffer ou caminho de arquivo
       const loadImage = async (buffer: Buffer | null, fallbackPath: string) => {
