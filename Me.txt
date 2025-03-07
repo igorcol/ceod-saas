@@ -1,0 +1,6 @@
+# ANOTAÇÃO DE LÓGICAS PARA FUTURAS FEATURES #
+
+TODO:
+> Handling de Ambientes
+
+> Middleware para não logar requisições no endereço /api/get-status
