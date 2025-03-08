@@ -1,0 +1,17 @@
+# ANOTAÇÃO DE LÓGICAS PARA FUTURAS FEATURES #
+
+TODO:
+
+> Arrumar download dos igressos
+> Mostrar Status do processo de geração de Qr Codes
+> Tabela de emails: Mostrar todos os emails antes mesmo de enviar
+> Tabela de Emails: Pop up para confirmar envio de emails, mostrando a quantidade de emails que sera enviado.
+
+
+
+
+
+
+DONE:
+> Handling de Ambientes - DONE
+> Middleware para não logar requisições no endereço /api/get-status - NÃO FUNCIONOU

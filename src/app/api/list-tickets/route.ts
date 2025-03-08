@@ -4,7 +4,7 @@ import path from 'path'
 
 // Lista os ingressos salvos na pasta local public/uploads
 
-export async function GET() {
+export async function GET(): Promise<Response> {
     try {
         const uploadsPath = path.join(process.cwd(), "public/uploads")
 

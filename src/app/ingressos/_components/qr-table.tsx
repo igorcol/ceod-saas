@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,16 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { saveTicketImage } from "@/lib/imageUtils";
-import { QRCodeData } from "@/lib/qrUtils";
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 
-interface PageProps {
-  generatedQRCodes: QRCodeData[];
-}
+//import { QRCodeData } from "@/lib/qrUtils";
+// interface PageProps {
+//   generatedQRCodes: QRCodeData[];
+// }
 
-export default function Page({ generatedQRCodes }: PageProps) {
+export default function Page() {
   const [tickets, setTickets] = useState<{ name: string; url: string }[]>([]);
 
   const loadSavedTickets = async () => {

@@ -3,7 +3,7 @@ import fs from 'fs'
 import { NextResponse } from 'next/server'
 import path from 'path'
 
-export async function GET() {
+export async function GET(): Promise<Response> {
     const uploadsPath = path.join(process.cwd(), 'public/uploads')
     const zipPath = path.join(process.cwd(), 'public/uploads', 'ingressos.zip')
 

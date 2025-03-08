@@ -3,7 +3,7 @@ import { GenerateQrImage } from "@/lib/imageUtils";
 import fs from 'fs'
 import path from 'path'
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
     try {
         const reqBody = await req.json()
         const {qrBuffer,backgroundImg,watermark,saveName} = reqBody
@@ -13,11 +13,6 @@ export async function POST(req: Request) {
         }
 
         console.log("📥 Gerando imagem:", saveName);
-        // console.log("📥 Recebido na API:");
-        // console.log("🔹 qrCode:", qrBuffer ? "✅ OK" : "❌ Faltando");
-        // console.log("🔹 backgroundImg:", backgroundImg ? "✅ OK" : "❌ Faltando");
-        // console.log("🔹 watermark:", watermark ? "✅ OK" : "❌ Faltando");
-        // console.log("🔹 saveName:", saveName);
 
         // Converte base64 para buffer
         const buffer = Buffer.from(qrBuffer.replace(/^data:image\/\w+;base64,/, ""), "base64");
@@ -38,3 +33,4 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Erro ao salvar imagem" }, { status: 500 });
     }
 }
+

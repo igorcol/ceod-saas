@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileSpreadsheet, Mail, QrCode } from "lucide-react";
 import Link from "next/link";
 
+import "../lib/envLogger"; // FAZ OS LOGS DE AMBIENTE
+
 const DashboardItems = [
   {
     title: "Converter Planilha",

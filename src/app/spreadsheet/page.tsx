@@ -4,10 +4,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { downloadJsonFile, excelToJson } from "@/lib/fileUtils";
-import { Car, Download, Upload } from "lucide-react";
+import { Download, Upload } from "lucide-react";
 import { useState } from "react";
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
     const [fileName, setFileName] = useState<string>('')
     const [file, setFile] = useState<File>()
     const [isConverted, setIsConverted] = useState(false)
@@ -23,8 +23,8 @@ const page: React.FC = () => {
     
     const handleConvert = async () => {
         if (file) {
-            let new_blob = await excelToJson(file)
-            let new_file = new File([new_blob], file.name, { type: new_blob.type })
+            const new_blob = await excelToJson(file)
+            const new_file = new File([new_blob], file.name, { type: new_blob.type })
             setConvertedFile(new_file)
             setIsConverted(true) 
         }
@@ -81,4 +81,4 @@ const page: React.FC = () => {
     );
 };
 
-export default page;
+export default Page;
