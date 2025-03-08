@@ -33,15 +33,14 @@ export default function Page() {
       try {
         const response = await fetch("/api/get-status");
         //console.log('RESPONSE STATUS:', response.status)
-        
+
         const newStatus = response.ok;
-        setApiOnline((prevStatus) =>
-          prevStatus !== newStatus ? newStatus : prevStatus  // Só altera o estado se for diferente
+        setApiOnline(
+          (prevStatus) => (prevStatus !== newStatus ? newStatus : prevStatus) // Só altera o estado se for diferente
         );
 
         //console.log('-> Is Api Online? >', newStatus)
-      } 
-      catch {
+      } catch {
         setApiOnline(false);
       }
     };
@@ -84,12 +83,26 @@ export default function Page() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <div className={isApiOnline ? "text-green-600" : "text-red-700"}>
-          {isApiOnline === null
-            ? "Verificando..."
-            : isApiOnline
-            ? "API ONLINE"
-            : "API OFFLINE"}
+        <div className="flex items-center justify-start borde">
+          {/* Indicador de status (Círculo) */}
+          <div
+            className={`w-4 h-4 rounded-full ${
+              isApiOnline === null
+                ? "bg-gray-500"
+                : isApiOnline
+                ? "bg-green-600"
+                : "bg-red-700"
+            }`}
+          ></div>
+
+          {/* Texto do status */}
+          <span className="ml-2 text-black text-sm">
+            {isApiOnline === null
+              ? "Verificando..."
+              : isApiOnline
+              ? "API ONLINE"
+              : "API OFFLINE"}
+          </span>
         </div>
         <ThemeToggle />
       </SidebarFooter>
