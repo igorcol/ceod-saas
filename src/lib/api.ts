@@ -13,8 +13,13 @@ async function fetchData(get_data:string)  {
     return data
 }
 
+type TUser = {
+    EMAIL: string,
+    _id: string
+}
 // Retorna uma lista com todos os emais
-async function GetEmailsFromDb() {
+async function GetEmailsFromDb(): Promise<TUser[]> {
+    
     try {
         // Fazendo uma requisição GET para a API
         const api_users_emails_url = `${API_URL}/users/emails`
@@ -33,6 +38,7 @@ async function GetEmailsFromDb() {
         return data; 
     } catch (error) {
         console.error('Erro:', error);
+        return []
     }
 }
 

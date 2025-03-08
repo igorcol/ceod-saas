@@ -1,10 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { GetEmailsFromDb } from "@/lib/api";
+//import { ApiGetEmails } from "@/lib/Email/_requests/GetEmails";
 import { ApiSendEmails } from "@/lib/Email/_requests/SendEmails";
 import { useEffect, useState } from "react";
 
-  // TODO : ----------> ALTERAR EMAILRECEIVED PARA TRUE
+// TODO : ----------> ALTERAR EMAILRECEIVED PARA TRUE
 
 export default function Page() {
   interface EmailResult {
@@ -16,11 +17,46 @@ export default function Page() {
     error?: { response: string };
   }
 
+  type TUsersEmails = {
+    user: {
+      email: string,
+      id: string
+    }
+    success: boolean;
+    error?: { response: string };
+  };
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sentEmails, SetSentEmails] = useState<EmailResult[]>([]);
-  const [statusMessage, setStatusMessage] = useState<string>("Nenhum email enviado ainda.");
+  const [statusMessage, setStatusMessage] = useState<string>(
+    "Nenhum email enviado ainda."
+  );
 
-  
+  const [usersEmails, setUsersEmails] = useState<TUsersEmails[]>([]);
+
+  // * FETCH EMAILS * \\
+  //  Pega todos os emails e seta no usersEmails
+  useEffect(() => {
+    async function getEmails() {
+      const emails = await GetEmailsFromDb();
+
+      const usersEmailsArray: TUsersEmails[] = emails.map((user) => ({
+        user: { email: user.EMAIL, id: user._id }, 
+        success: false
+      }));
+
+      setUsersEmails(usersEmailsArray);
+    }
+
+    getEmails();
+  }, []);
+  useEffect(() => {
+    usersEmails.map((emailObj) => {
+      console.log(emailObj.user.email);
+    });
+  }, [usersEmails]);
+
+  // * ENVIO DE EMAILS * \\
   async function handleSendEmails() {
     setIsLoading(true);
     setStatusMessage("Enviando emails...");
@@ -46,38 +82,37 @@ export default function Page() {
       </Button>
 
       <div className="space-y-3">
-        <h1 className="text-xl font-bold">Emails Enviados:</h1>
+        <h1 className="text-xl font-bold">Inscritos:</h1>
 
-        {sentEmails.length > 0 ? ( // * SE HOUVER EMAILS ENVIADOS
-          sentEmails.map((email) => {
+        {usersEmails.length > 0 ? ( // * SE HOUVER EMAILS ENVIADOS
+          usersEmails.map((emailObj, index) => {
             return (
-              <div key={email.user.id} className="mt-3 space-y-1">
+              <div key={emailObj?.user.id || index} className="mt-3 space-y-1">
                 <div className=" w-[screen] flex flex-row border border-border p-2 gap-x-3">
-                  <p className="border-r border-border pr-3">
-                    {email.success ? "✅" : "❌"}
-                  </p>
+                  <p className="border-r border-border pr-3">🔵</p>
                   <div className="flex flex-row items-center justify-between w-screen">
                     <p>
-                      {email.user.email
-                        ? email.user.email
+                      {emailObj?.user.email
+                        ? emailObj?.user.email
                         : "- Usuário sem Email -"}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {email.user.id}
+                      {emailObj.user.id}
                     </p>
                   </div>
                 </div>
                 <div>
-                  {email.error && (
+                  {emailObj?.error && (
                     <p className="text-xs text-muted-foreground">
-                      {email.error.response}
+                      {emailObj?.error?.response}
                     </p>
                   )}
                 </div>
               </div>
             );
           })
-        ) : (  // * SE NÃO HOUVER EMAILS ENVIADOS
+        ) : (
+          // * SE NÃO HOUVER EMAILS ENVIADOS
           <p className="text-muted-foreground font-light">{statusMessage}</p>
         )}
       </div>
