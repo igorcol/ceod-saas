@@ -5,12 +5,12 @@
   "scripts": {
     "build": "next build",
     "lint": "next lint",
-    "dev": "next dev --turbopack",
-    "prod": "next start",
+    "start:dev": "next dev --turbopack",
+    "start:prod": "next start",
     "start": "next start",
-    "start-api:build": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm start",
+    "start-api:dev": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:dev",
     "start-api:prod": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:prod",
-    "start-api:dev": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:dev"
+    "start-api:build": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm start"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.6",
