@@ -8,26 +8,19 @@ import { useEffect, useState } from "react";
 // TODO : ----------> ALTERAR EMAILRECEIVED PARA TRUE
 
 export default function Page() {
-  interface EmailResult {
-    user: {
-      email: string;
-      id: string;
-    };
-    success: boolean;
-    error?: { response: string };
-  }
-
   type TUsersEmails = {
-    user: {
-      email: string,
-      id: string
-    }
-    success: boolean;
-    error?: { response: string };
+    status: string;
+    value: {
+      user: {
+        email: string;
+        id: string;
+      };
+      success: boolean | null;
+      error?: { response: string | undefined };
+    };
   };
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [sentEmails, SetSentEmails] = useState<EmailResult[]>([]);
   const [statusMessage, setStatusMessage] = useState<string>(
     "Nenhum usuário encontrado."
   );
@@ -41,8 +34,12 @@ export default function Page() {
       const emails = await GetEmailsFromDb();
 
       const usersEmailsArray: TUsersEmails[] = emails.map((user) => ({
-        user: { email: user.EMAIL, id: user._id }, 
-        success: false
+        status: "undefined",
+        value: {
+          user: { email: user.EMAIL, id: user._id },
+          success: null,
+          error: { response: undefined },
+        },
       }));
 
       setUsersEmails(usersEmailsArray);
@@ -50,11 +47,11 @@ export default function Page() {
 
     getEmails();
   }, []);
-  useEffect(() => {
-    usersEmails.map((emailObj) => {
-      console.log(emailObj.user.email);
-    });
-  }, [usersEmails]);
+  // useEffect(() => {
+  //   usersEmails.map((emailObj) => {
+  //     console.log(emailObj);
+  //   });
+  // }, [usersEmails]);
 
   // * ENVIO DE EMAILS * \\
   async function handleSendEmails() {
@@ -62,18 +59,36 @@ export default function Page() {
     setStatusMessage("Enviando emails...");
 
     const emails = await GetEmailsFromDb();
-    const results = await ApiSendEmails(emails);
+    const result = await ApiSendEmails(emails);
 
-    if (results && results.results) {
-      SetSentEmails(results.results);
+    if (result && result.results) {
+      console.log("result.results", result.results);
+      const usersEmailsArray: TUsersEmails[] = result.results.map(
+        (result: TUsersEmails) => ({
+          status: result.status,
+          value: {
+            success: result.value?.success || false,
+            user: {
+              email: result.value?.user.email || "-- Usuário sem email --",
+              id: result.value?.user.id || " -- Usuário sem ID --",
+            },
+            error: {
+              response: result.value?.error?.response || "Email inválido ou indefinido.",
+            },
+          },
+        })
+      );
+
+      console.log("usersEmailsArray", usersEmailsArray);
+      setUsersEmails(usersEmailsArray);
     }
 
     setIsLoading(false);
   }
 
   useEffect(() => {
-    console.log(sentEmails);
-  }, [sentEmails]);
+    console.log(usersEmails);
+  }, [usersEmails]);
 
   return (
     <div className="space-y-5">
@@ -87,24 +102,33 @@ export default function Page() {
         {usersEmails.length > 0 ? ( // * SE HOUVER EMAILS ENVIADOS
           usersEmails.map((emailObj, index) => {
             return (
-              <div key={emailObj?.user.id || index} className="mt-3 space-y-1">
+              <div
+                key={emailObj?.value.user.id || index}
+                className="mt-3 space-y-1"
+              >
                 <div className=" w-[screen] flex flex-row border border-border p-2 gap-x-3">
-                  <p className="border-r border-border pr-3">🔵</p>
+                  <p className="border-r border-border pr-3">
+                    {emailObj?.value.success === null
+                      ? "🔵"
+                      : emailObj?.value.success
+                      ? "🟢"
+                      : "❌"}
+                  </p>
                   <div className="flex flex-row items-center justify-between w-screen">
                     <p>
-                      {emailObj?.user.email
-                        ? emailObj?.user.email
+                      {emailObj?.value.user.email
+                        ? emailObj?.value.user.email
                         : "- Usuário sem Email -"}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {emailObj.user.id}
+                      {emailObj.value.user.id}
                     </p>
                   </div>
                 </div>
                 <div>
-                  {emailObj?.error && (
+                  {emailObj?.value.error && (
                     <p className="text-xs text-muted-foreground">
-                      {emailObj?.error?.response}
+                      {emailObj?.value.error?.response}
                     </p>
                   )}
                 </div>
