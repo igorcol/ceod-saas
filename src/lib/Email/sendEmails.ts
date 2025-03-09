@@ -28,7 +28,7 @@ export async function SendEmail(to: string, ticketName: string) {
         throw new Error(`Endereço de e-mail inválido ou inexistente: ${to}`);
     }
 
-    const emailSubject = 'Seu ingresso para o IV CEOD-SP está aqui! 🎟️'
+    const emailSubject = 'Seu ingresso para o CREOD MACRO K está aqui! 🎟️'
 
     const mailOptions = {
         from: process.env.EMAIL_FROM, 
