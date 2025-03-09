@@ -21,29 +21,47 @@ export async function POST(req: Request): Promise<Response> {
         }
 
         // * Enviar e-mails
-        const results = await Promise.all(
+        const results = await Promise.allSettled(
             DATA.map((person) => SendEmail(person.EMAIL, person["_id"]))
         );
 
         // LOG NO SERVIDOR (VS CODE)
         console.log("\n✅ RESULTADOS DOS E-MAILS ENVIADOS:");
-        results.forEach((result) => {
-            if (result.success) {
-                console.log(`✔️\t${result.user.email}`);
+
+        results.forEach((result, index) => {
+            if (result.status === "fulfilled") {
+                if (result.value.success) {
+                    console.log(`✔️\t${result.value.user.email}`);
+                } else {
+                    console.log(`❌\t${result.value.user.email} -> ${result.value.error}`);
+                }
             } else {
-                const error = result.error as { response: string };
-                console.log(`❌\t${result.user.email}\t->\t${error}`);
+                console.log(`❌\t${DATA[index].EMAIL || "[ ]"} -> ${result.reason}`);
             }
         });
 
-        return NextResponse.json(
-            ({ message: "E-mails enviados", results })
-        );
+        // verifica se TODOS falharam
+        const allFailed = results.every(result => result.status === "rejected")
 
+        if (allFailed) {
+            return NextResponse.json(
+                { error: "Nenhum email pôde ser enviado", results },
+                { status: StatusCodes.INTERNAL_SERVER_ERROR }
+            )
+        }
+
+
+        return NextResponse.json(
+            { message: "E-mails processados", results },
+            { status: StatusCodes.OK }
+        );
 
     }
     catch (error) {
         console.error("❌ send-emails | Erro na API:", error);
-        return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });
+        return NextResponse.json(
+            { error: "Erro interno no servidor" },
+            { status: StatusCodes.INTERNAL_SERVER_ERROR }
+        );
     }
 }

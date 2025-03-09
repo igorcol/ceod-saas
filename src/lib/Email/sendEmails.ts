@@ -24,6 +24,9 @@ import { imagePath, transporter } from './config';
 
 
 export async function SendEmail(to: string, ticketName: string) {
+    if (!to || typeof to !== "string" || to.trim() === "") {
+        throw new Error(`Endereço de e-mail inválido ou inexistente: ${to}`);
+    }
 
     const emailSubject = 'Seu ingresso para o IV CEOD-SP está aqui! 🎟️'
 

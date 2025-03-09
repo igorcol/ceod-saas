@@ -29,7 +29,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sentEmails, SetSentEmails] = useState<EmailResult[]>([]);
   const [statusMessage, setStatusMessage] = useState<string>(
-    "Nenhum email enviado ainda."
+    "Nenhum usuário encontrado."
   );
 
   const [usersEmails, setUsersEmails] = useState<TUsersEmails[]>([]);
