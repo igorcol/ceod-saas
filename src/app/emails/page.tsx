@@ -73,7 +73,7 @@ export default function Page() {
               id: result.value?.user.id || " -- Usuário sem ID --",
             },
             error: {
-              response: result.value?.error?.response || "Email inválido ou indefinido.",
+              response: result.value?.error?.response,
             },
           },
         })
@@ -112,7 +112,7 @@ export default function Page() {
                       ? "🔵"
                       : emailObj?.value.success
                       ? "🟢"
-                      : "❌"}
+                      : "🔴"}
                   </p>
                   <div className="flex flex-row items-center justify-between w-screen">
                     <p>
