@@ -63,7 +63,7 @@ const EmailBody = `
         <p class="footer">Nos vemos em breve! Qualquer dúvida, estamos à disposição.</p>
         <p class="footer">Fraternalmente, <br> Comissão Organizadora do CREOD-SP</p>
         <p> </p>
-        <p class="footer">Sofware desenvolvido pelo Irmão Sênior Igor Colombini - ID: 92321</p>
+        <p class="footer">Sistema desenvolvido pelo Irmão Sênior Igor Colombini ID: 92321</p>
     </div>
 </body>
 
