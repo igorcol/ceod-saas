@@ -1,6 +1,7 @@
 
 import { EmailBody } from './emailBody';
 import path from 'path';
+import fs from 'fs';
 import { imagePath, transporter } from './config';
 
 /* 
@@ -27,6 +28,10 @@ export async function SendEmail(to: string, ticketName: string) {
     if (!to || typeof to !== "string" || to.trim() === "") {
         throw new Error(`Endereço de e-mail inválido ou inexistente: ${to}`);
     }
+    const ticketImagePath = path.join(imagePath, `${ticketName}.png`)
+    if (!fs.existsSync(ticketImagePath)) {
+        throw new Error(`Não existe nenhum ingresso gerado para este usuário.`)
+    }
 
     const emailSubject = 'Seu ingresso para o CREOD MACRO K está aqui! 🎟️'
 
@@ -38,7 +43,7 @@ export async function SendEmail(to: string, ticketName: string) {
         attachments: [
             {
                 filename: `ingresso_ceod_${ticketName}.png`,
-                path: path.join(imagePath, `${ticketName}.png`),
+                path: ticketImagePath,
                 contentType: 'image/png'
             }
         ],
