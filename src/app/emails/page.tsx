@@ -58,8 +58,12 @@ export default function Page() {
     setIsLoading(true);
     setStatusMessage("Enviando emails...");
 
-    const emails = await GetEmailsFromDb();
-    const result = await ApiSendEmails(emails);
+    const emails = usersEmails.map(emailObj => ({
+      _id: emailObj.value.user.id,
+      EMAIL: emailObj.value.user.email
+    }));
+    console.log("emails --> ", emails)
+    const result = await ApiSendEmails(emails); // Espera um array de objetos com _id e EMAIL
 
     if (result && result.results) {
       console.log("result.results", result.results);
