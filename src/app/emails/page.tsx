@@ -62,7 +62,6 @@ export default function Page() {
       _id: emailObj.value.user.id,
       EMAIL: emailObj.value.user.email
     }));
-    console.log("emails --> ", emails)
     const result = await ApiSendEmails(emails); // Espera um array de objetos com _id e EMAIL
 
     if (result && result.results) {
