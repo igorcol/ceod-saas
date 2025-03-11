@@ -15,7 +15,8 @@ async function fetchData(get_data:string)  {
 
 type TUser = {
     EMAIL: string,
-    _id: string
+    _id: string,
+    emailReceived: boolean,
 }
 // Retorna uma lista com todos os emais
 async function GetEmailsFromDb(): Promise<TUser[]> {

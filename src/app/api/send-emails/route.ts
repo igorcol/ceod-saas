@@ -2,16 +2,31 @@ import { SendEmail } from "@/lib/Email/sendEmails";
 import StatusCodes from "http-status-codes";
 import { NextResponse } from "next/server";
 
+interface TReqUser {
+    _id: string,
+    EMAIL: string,
+    emailReceived: boolean
+}
+
 
 export async function POST(req: Request): Promise<Response> {
     try {
-        const DATA = await req.json()
+        const DATA: Array<TReqUser> = await req.json()
+        
+        const usersToSend = DATA.filter(person => !person.emailReceived)
+        if (usersToSend.length === 0) {
+            return NextResponse.json(
+                { message: "Todos emails ja foram enviados." },
+                { status: StatusCodes.OK }
+            );
+        }
         /*
             DATA:  
             [
                 {
                     '_id': '0934320348',
-                    'EMAIL': 'm@example.com'
+                    'EMAIL': 'm@example.com',
+                    'emailReceived': true | false
                 },
             ]
         */
@@ -22,7 +37,9 @@ export async function POST(req: Request): Promise<Response> {
 
         // * Enviar e-mails
         const results = await Promise.allSettled(
-            DATA.map((person) => SendEmail(person.EMAIL, person["_id"]))
+            usersToSend.map((user) => 
+                SendEmail(user.EMAIL, user["_id"])
+            )
         );
 
         // LOG NO SERVIDOR (VS CODE)

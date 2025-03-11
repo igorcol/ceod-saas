@@ -37,7 +37,7 @@ export default function Page() {
         status: "undefined",
         value: {
           user: { email: user.EMAIL, id: user._id },
-          success: null,
+          success: user.emailReceived ? true : null,
           error: { response: undefined },
         },
       }));
@@ -65,7 +65,7 @@ export default function Page() {
     const result = await ApiSendEmails(emails); // Espera um array de objetos com _id e EMAIL
 
     if (result && result.results) {
-      console.log("result.results", result.results);
+      //console.log("result.results", result.results);
       const usersEmailsArray: TUsersEmails[] = result.results.map(
         (result: TUsersEmails) => ({
           status: result.status,
@@ -82,7 +82,7 @@ export default function Page() {
         })
       );
 
-      console.log("usersEmailsArray", usersEmailsArray);
+      //console.log("usersEmailsArray", usersEmailsArray);
       setUsersEmails(usersEmailsArray);
     }
 
