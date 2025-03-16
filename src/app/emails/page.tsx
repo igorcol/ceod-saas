@@ -4,29 +4,17 @@ import { GetEmailsFromDb } from "@/lib/api";
 import { ApiSendEmails } from "@/lib/Email/_requests/SendEmails";
 import { ApiUpdateReceived } from "@/lib/Email/_requests/UpdateReceived";
 import { useEffect, useState } from "react";
+import { TUsersEmails } from "./types";
+import EmailCard from "./_components/EmailCard";
 
 // TODO : ----------> ALTERAR EMAILRECEIVED PARA TRUE
 
 export default function Page() {
-  type TUsersEmails = {
-    status: string;
-    value: {
-      user: {
-        email: string;
-        id: string;
-        emailReceived: boolean;
-      };
-      success: boolean | null;
-      error?: { response: string | undefined };
-    };
-  };
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [usersEmails, setUsersEmails] = useState<TUsersEmails[]>([]);
   const [statusMessage, setStatusMessage] = useState<string>(
     "Nenhum usuário encontrado."
   );
-
-  const [usersEmails, setUsersEmails] = useState<TUsersEmails[]>([]);
 
   // * FETCH EMAILS * \\
   //  Pega todos os emails e seta no usersEmails
@@ -85,10 +73,11 @@ export default function Page() {
     if (result && result.results) {
       const usersEmailsArray: TUsersEmails[] = await Promise.all(
         result.results.map(async (result: TUsersEmails) => {
-          const emailSuccess = result.value?.success || false
+          const emailSuccess = result.value?.success || false;
 
-          if (emailSuccess) { // Se conseguiu enviar o email
-            await ApiUpdateReceived(result.value?.user.id, true) // Atualiza EmailReceived
+          if (emailSuccess) {
+            // Se conseguiu enviar o email
+            await ApiUpdateReceived(result.value?.user.id, true); // Atualiza EmailReceived
           }
 
           return {
@@ -97,16 +86,15 @@ export default function Page() {
               ...result.value,
               user: {
                 ...result.value.user,
-                emailReceived: emailSuccess
+                emailReceived: emailSuccess,
               },
               error: {
                 response: result.value?.error?.response,
               },
             },
-          }
-
+          };
         })
-      )
+      );
 
       // Atualiza os emails com os resultados
       setUsersEmails(usersEmailsArray);
@@ -130,41 +118,13 @@ export default function Page() {
         <h1 className="text-xl font-bold">Inscritos:</h1>
 
         {usersEmails.length > 0 ? ( // * SE HOUVER EMAILS ENVIADOS
-          usersEmails.map((emailObj, index) => {
-            return (
-              <div
-                key={emailObj?.value.user.id || index}
-                className="mt-3 space-y-1"
-              >
-                <div className=" w-[screen] flex flex-row border border-border p-2 gap-x-3">
-                  <p className="border-r border-border pr-3">
-                    {emailObj?.value.success === null
-                      ? "🔵"
-                      : emailObj?.value.success
-                      ? "🟢"
-                      : "🔴"}
-                  </p>
-                  <div className="flex flex-row items-center justify-between w-screen">
-                    <p>
-                      {emailObj?.value.user.email
-                        ? emailObj?.value.user.email
-                        : "- Usuário sem Email -"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {emailObj.value.user.id}
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  {emailObj?.value.error && (
-                    <p className="text-xs text-muted-foreground">
-                      {emailObj?.value.error?.response}
-                    </p>
-                  )}
-                </div>
-              </div>
-            );
-          })
+          usersEmails.map((emailObj, index) => (
+            <EmailCard
+              key={emailObj?.value.user.id || index}
+              emailObj={emailObj}
+              index={index}
+            />
+          ))
         ) : (
           // * SE NÃO HOUVER EMAILS ENVIADOS
           <p className="text-muted-foreground font-light">{statusMessage}</p>
