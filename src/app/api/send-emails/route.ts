@@ -31,8 +31,6 @@ export async function POST(req: Request): Promise<Response> {
                 SendEmail(user.EMAIL, user["_id"])
             )
         );
-        console.log('Results: ', results)
-
         // LOG NO SERVIDOR (VS CODE)
         console.log("\n✅ RESULTADOS DOS E-MAILS ENVIADOS:");
 
@@ -67,7 +65,7 @@ export async function POST(req: Request): Promise<Response> {
     catch (error) {
         console.error("❌ [send-emails]  | Erro na API:", error);
         return NextResponse.json(
-            { error: "Erro interno no servidor" },
+            { error: error },
             { status: StatusCodes.INTERNAL_SERVER_ERROR }
         );
     }

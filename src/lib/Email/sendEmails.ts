@@ -22,14 +22,16 @@ import { imagePath, transporter } from './config';
 ! =================================================================== 
 */
 
-
+function pathExists(path: string) {
+    return fs.existsSync(path)
+}
 
 export async function SendEmail(to: string, ticketName: string) {
     if (!to || typeof to !== "string" || to.trim() === "") {
         throw new Error(`Endereço de e-mail inválido ou inexistente: ${to}`);
     }
     const ticketImagePath = path.join(imagePath, `${ticketName}.png`)
-    if (!fs.existsSync(ticketImagePath)) {
+    if (!pathExists(ticketImagePath)) {
         throw new Error(`Não existe nenhum ingresso gerado para este usuário.`)
     }
 

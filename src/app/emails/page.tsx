@@ -63,7 +63,6 @@ export default function Page() {
 
     // Envia emails
     const result = await ApiSendEmails(emailsTosend);
-    console.log("Sending emails to:", emailsTosend);
     console.log("result ApiSendEmails(emails):", result);
     //TODO -- SETAR UM OUTRO <p> DE STATUS PARA RESULT.MESSAGE
 
@@ -107,7 +106,7 @@ export default function Page() {
       // ? SE O PROCESSO PARAR NO MEIO, EMAILS JA ENVIADOS ESTÃO COMO "emailReceived": true ???
     }
     
-    setStatusMessage("")
+    setStatusMessage(result.error ? `${result.error} -> ${result.message}` : "")
     setIsLoading(false);
   }
 
