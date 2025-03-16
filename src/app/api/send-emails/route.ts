@@ -2,48 +2,71 @@ import { SendEmail } from "@/lib/Email/sendEmails";
 import StatusCodes from "http-status-codes";
 import { NextResponse } from "next/server";
 
+interface TReqUser {
+    _id: string,
+    EMAIL: string,
+    emailReceived: boolean
+}
 
 export async function POST(req: Request): Promise<Response> {
     try {
-        const DATA = await req.json()
-        /*
-            DATA:  
-            [
-                {
-                    '_id': '0934320348',
-                    'EMAIL': 'm@example.com'
-                },
-            ]
-        */
+        const DATA: Array<TReqUser> = await req.json()
+        
+        const usersToSend = DATA.filter(person => !person.emailReceived && person.EMAIL)
+        console.log(usersToSend.map(user=>user.EMAIL))
+        if (usersToSend.length === 0) {
+            return NextResponse.json(
+                { message: "Todos emails ja foram enviados." },
+                { status: StatusCodes.OK }
+            );
+        }
 
         if (!DATA || !Array.isArray(DATA)) {
-            return NextResponse.json({ error: "Lista de e-mails inválida" }, { status: StatusCodes.BAD_REQUEST });
+            return NextResponse.json({ error: "Lista de e-mails inválida." }, { status: StatusCodes.BAD_REQUEST });
         }
 
         // * Enviar e-mails
-        const results = await Promise.all(
-            DATA.map((person) => SendEmail(person.EMAIL, person["_id"]))
+        const results = await Promise.allSettled(
+            usersToSend.map((user) => 
+                SendEmail(user.EMAIL, user["_id"])
+            )
         );
-
         // LOG NO SERVIDOR (VS CODE)
         console.log("\n✅ RESULTADOS DOS E-MAILS ENVIADOS:");
-        results.forEach((result) => {
-            if (result.success) {
-                console.log(`✔️\t${result.user.email}`);
+
+        results.forEach((result, index) => {
+            if (result.status === "fulfilled") {
+                if (result.value.success) {
+                    console.log(`✔️\t${result.value.user.email}`);
+                } else {
+                    console.log(`❌\t${result.value.user.email} -> ${result.value.error}`);
+                }
             } else {
-                const error = result.error as { response: string };
-                console.log(`❌\t${result.user.email}\t->\t${error}`);
+                console.log(`❌\t${DATA[index].EMAIL || "null"} ->> ${result.reason}`);
             }
         });
 
-        return NextResponse.json(
-            ({ message: "E-mails enviados", results })
-        );
+        // verifica se TODOS falharam
+        const allFailed = results.every(result => result.status === "rejected")
 
+        if (allFailed) {
+            return NextResponse.json(
+                { error: "Nenhum email pôde ser enviado", results },
+                { status: StatusCodes.INTERNAL_SERVER_ERROR }
+            )
+        }
+
+        return NextResponse.json(
+            { message: "E-mails processados", results },
+            { status: StatusCodes.OK }
+        );
 
     }
     catch (error) {
-        console.error("❌ send-emails | Erro na API:", error);
-        return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });
+        console.error("❌ [send-emails]  | Erro na API:", error);
+        return NextResponse.json(
+            { error: error },
+            { status: StatusCodes.INTERNAL_SERVER_ERROR }
+        );
     }
 }

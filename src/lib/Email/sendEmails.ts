@@ -1,6 +1,7 @@
 
 import { EmailBody } from './emailBody';
 import path from 'path';
+import fs from 'fs';
 import { imagePath, transporter } from './config';
 
 /* 
@@ -21,11 +22,20 @@ import { imagePath, transporter } from './config';
 ! =================================================================== 
 */
 
-
+function pathExists(path: string) {
+    return fs.existsSync(path)
+}
 
 export async function SendEmail(to: string, ticketName: string) {
+    if (!to || typeof to !== "string" || to.trim() === "") {
+        throw new Error(`Endereço de e-mail inválido ou inexistente: ${to}`);
+    }
+    const ticketImagePath = path.join(imagePath, `${ticketName}.png`)
+    if (!pathExists(ticketImagePath)) {
+        throw new Error(`Não existe nenhum ingresso gerado para este usuário.`)
+    }
 
-    const emailSubject = 'Seu ingresso para o IV CEOD-SP está aqui! 🎟️'
+    const emailSubject = 'Seu ingresso para o CREOD MACRO K está aqui! 🎟️'
 
     const mailOptions = {
         from: process.env.EMAIL_FROM, 
@@ -35,7 +45,7 @@ export async function SendEmail(to: string, ticketName: string) {
         attachments: [
             {
                 filename: `ingresso_ceod_${ticketName}.png`,
-                path: path.join(imagePath, `${ticketName}.png`),
+                path: ticketImagePath,
                 contentType: 'image/png'
             }
         ],

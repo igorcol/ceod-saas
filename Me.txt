@@ -1,7 +1,15 @@
 # ANOTAÇÃO DE LÓGICAS PARA FUTURAS FEATURES #
 
-TODO:
 
+
+-> FAZER
+Mudar a rota de emails para trazer também o nome
+Colocar o nome na lista de mails
+
+
+
+
+TODO:
 > Arrumar download dos igressos
 > Mostrar Status do processo de geração de Qr Codes
 > Tabela de emails: Mostrar todos os emails antes mesmo de enviar

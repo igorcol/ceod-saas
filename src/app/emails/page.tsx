@@ -2,42 +2,117 @@
 import { Button } from "@/components/ui/button";
 import { GetEmailsFromDb } from "@/lib/api";
 import { ApiSendEmails } from "@/lib/Email/_requests/SendEmails";
+import { ApiUpdateReceived } from "@/lib/Email/_requests/UpdateReceived";
 import { useEffect, useState } from "react";
+import { TUsersEmails } from "./types";
+import EmailCard from "./_components/EmailCard";
 
-  // TODO : ----------> ALTERAR EMAILRECEIVED PARA TRUE
+// TODO : ----------> ALTERAR EMAILRECEIVED PARA TRUE
 
 export default function Page() {
-  interface EmailResult {
-    user: {
-      email: string;
-      id: string;
-    };
-    success: boolean;
-    error?: { response: string };
-  }
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [sentEmails, SetSentEmails] = useState<EmailResult[]>([]);
-  const [statusMessage, setStatusMessage] = useState<string>("Nenhum email enviado ainda.");
+  const [usersEmails, setUsersEmails] = useState<TUsersEmails[]>([]);
+  const [statusMessage, setStatusMessage] = useState<string>("");
 
-  
+  // * FETCH EMAILS * \\
+  //  Pega todos os emails e seta no usersEmails
+  useEffect(() => {
+    async function getEmails() {
+      const emails = await GetEmailsFromDb();
+
+      const usersEmailsArray: TUsersEmails[] = emails.map((user) => ({
+        status: "undefined",
+        value: {
+          user: {
+            email: user.EMAIL,
+            id: user._id,
+            emailReceived: user.emailReceived,
+          },
+          success: user.emailReceived ? true : null,
+          error: { response: undefined },
+        },
+      }));
+
+      setUsersEmails(usersEmailsArray);
+    }
+    getEmails();
+  }, []);
+
+  useEffect(() => {
+    usersEmails.map((emailObj) => {
+      console.log(emailObj);
+    });
+  }, [usersEmails]);
+
+  // * --- ENVIO DE EMAILS --- * \\
   async function handleSendEmails() {
     setIsLoading(true);
     setStatusMessage("Enviando emails...");
 
-    const emails = await GetEmailsFromDb();
-    const results = await ApiSendEmails(emails);
+    // Lista de emails para o envio
+    const emailsTosend = usersEmails // apenas usuarios que tem email e que ainda não receberam
+      .filter(
+        (user) =>
+          !user.value.user.emailReceived && user.value.user.email !== null
+      )
+      .map((user) => ({
+        _id: user.value.user.id,
+        EMAIL: user.value.user.email,
+        emailReceived: user.value.user.emailReceived,
+      }));
 
-    if (results && results.results) {
-      SetSentEmails(results.results);
+    // Envia emails
+    const result = await ApiSendEmails(emailsTosend);
+    console.log("result ApiSendEmails(emails):", result);
+    //TODO -- SETAR UM OUTRO <p> DE STATUS PARA RESULT.MESSAGE
+
+    // --
+    if (result && result.results) {
+      const usersEmailsArray: TUsersEmails[] = await Promise.all(
+        result.results.map(async (result: TUsersEmails) => {
+          const emailSuccess = result.value?.success || false;
+
+          if (emailSuccess) {
+            // Se conseguiu enviar o email
+            await ApiUpdateReceived(result.value?.user.id, true); // Atualiza EmailReceived
+          }
+
+          return {
+            ...result,
+            value: {
+              ...result.value,
+              user: {
+                ...result.value.user,
+                emailReceived: emailSuccess,
+              },
+              error: {
+                response: result.value?.error?.response,
+              },
+            },
+          };
+          
+        })
+      );
+
+      // Atualiza os emails com os resultados, mantendo os emails que não foram atualizados
+      setUsersEmails((prevUsersEmails) => {
+        const updatedUsersMap = new Map( 
+          usersEmailsArray.map((user) => [user.value.user.id, user])
+        );
+        return prevUsersEmails.map((prevUser) =>
+          updatedUsersMap.get(prevUser.value.user.id) || prevUser
+        );
+      });
+      // ? SE O PROCESSO PARAR NO MEIO, EMAILS JA ENVIADOS ESTÃO COMO "emailReceived": true ???
     }
-
+    
+    setStatusMessage(result.error ? `${result.error} -> ${result.message}` : "")
     setIsLoading(false);
   }
 
   useEffect(() => {
-    console.log(sentEmails);
-  }, [sentEmails]);
+    console.log(usersEmails);
+  }, [usersEmails]);
 
   return (
     <div className="space-y-5">
@@ -46,40 +121,16 @@ export default function Page() {
       </Button>
 
       <div className="space-y-3">
-        <h1 className="text-xl font-bold">Emails Enviados:</h1>
+        <h1 className="text-xl font-bold">Inscritos:</h1>
+        <p>{statusMessage}</p>
 
-        {sentEmails.length > 0 ? ( // * SE HOUVER EMAILS ENVIADOS
-          sentEmails.map((email) => {
-            return (
-              <div key={email.user.id} className="mt-3 space-y-1">
-                <div className=" w-[screen] flex flex-row border border-border p-2 gap-x-3">
-                  <p className="border-r border-border pr-3">
-                    {email.success ? "✅" : "❌"}
-                  </p>
-                  <div className="flex flex-row items-center justify-between w-screen">
-                    <p>
-                      {email.user.email
-                        ? email.user.email
-                        : "- Usuário sem Email -"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {email.user.id}
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  {email.error && (
-                    <p className="text-xs text-muted-foreground">
-                      {email.error.response}
-                    </p>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        ) : (  // * SE NÃO HOUVER EMAILS ENVIADOS
-          <p className="text-muted-foreground font-light">{statusMessage}</p>
-        )}
+        {usersEmails.map((emailObj, index) => (
+          <EmailCard
+            key={emailObj?.value.user.id || index}
+            emailObj={emailObj}
+            index={index}
+          />
+        ))}
       </div>
     </div>
   );

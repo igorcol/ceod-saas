@@ -9,11 +9,14 @@ export const ApiSendEmails = async (emails: Array<object>) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(emails),
     });
+    
+    if (!response.ok) {
+      console.error('[ApiSendEmails] Erro na requisição:', response.statusText);
+      return { error: '[ApiSendEmails] Erro ao requisição', message: response.statusText };
+    }
 
     const responseData = await response.json()
-    //console.log("📩 Resultados do envio:", responseData.results);
-
-    alert("✅ Emails Enviados.");
+    console.log(">>> RESPONSE DATA:",responseData)
     return responseData;
   }
   catch (error) {
