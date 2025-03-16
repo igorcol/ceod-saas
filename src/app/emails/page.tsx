@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { GetEmailsFromDb } from "@/lib/api";
-//import { ApiGetEmails } from "@/lib/Email/_requests/GetEmails";
 import { ApiSendEmails } from "@/lib/Email/_requests/SendEmails";
 import { ApiUpdateReceived } from "@/lib/Email/_requests/UpdateReceived";
 import { useEffect, useState } from "react";
@@ -38,7 +37,11 @@ export default function Page() {
       const usersEmailsArray: TUsersEmails[] = emails.map((user) => ({
         status: "undefined",
         value: {
-          user: { email: user.EMAIL, id: user._id,emailReceived: user.emailReceived },
+          user: {
+            email: user.EMAIL,
+            id: user._id,
+            emailReceived: user.emailReceived,
+          },
           success: user.emailReceived ? true : null,
           error: { response: undefined },
         },
@@ -60,23 +63,26 @@ export default function Page() {
     setIsLoading(true);
     setStatusMessage("Enviando emails...");
 
-    // Lista de emails para o envio  
+    // Lista de emails para o envio
     const emailsTosend = usersEmails // apenas usuarios que tem email e que ainda não receberam
-    .filter(user => !user.value.user.emailReceived && user.value.user.email !== null)
-    .map(user => ({
-      _id: user.value.user.id,
-      EMAIL: user.value.user.email,
-      emailReceived: user.value.user.emailReceived
-    }));
+      .filter(
+        (user) =>
+          !user.value.user.emailReceived && user.value.user.email !== null
+      )
+      .map((user) => ({
+        _id: user.value.user.id,
+        EMAIL: user.value.user.email,
+        emailReceived: user.value.user.emailReceived,
+      }));
 
     // Envia emails
-    const result = await ApiSendEmails(emailsTosend); 
-    console.log('Sending emails to:', emailsTosend)
-    console.log('result ApiSendEmails(emails):', result)
-    //TODO -- SETAR UM OUTRO <p> DE STATUS PARA RESULT.MESSAGE 
+    const result = await ApiSendEmails(emailsTosend);
+    console.log("Sending emails to:", emailsTosend);
+    console.log("result ApiSendEmails(emails):", result);
+    //TODO -- SETAR UM OUTRO <p> DE STATUS PARA RESULT.MESSAGE
 
     // --
-    if (result && result.results) { 
+    if (result && result.results) {
       const usersEmailsArray: TUsersEmails[] = await Promise.all(
         result.results.map(async (result: TUsersEmails) => {
           const emailSuccess = result.value?.success || false
@@ -86,12 +92,11 @@ export default function Page() {
           }
 
           return {
-            status: result.status,
+            ...result,
             value: {
-              success: emailSuccess,
+              ...result.value,
               user: {
-                email: result.value?.user.email || "-- Usuário sem email --",
-                id: result.value?.user.id || " -- Usuário sem ID --",
+                ...result.value.user,
                 emailReceived: emailSuccess
               },
               error: {
@@ -99,7 +104,7 @@ export default function Page() {
               },
             },
           }
-          
+
         })
       )
 
