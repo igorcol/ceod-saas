@@ -2,7 +2,7 @@ const EmailBody = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seu ingresso para o CREOD-SP</title>
+    <title>Seu ingresso para o CREOD-</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,7 +74,7 @@ const EmailBody = `
 </head>
 <body>
     <div class="container">
-        <h1>Seu ingresso para o CREOD-SP está aqui! 🎟️</h1>
+        <h1>Seu ingresso para o CREOD está aqui! 🎟️</h1>
         <p>Olá! 👋</p>
         <p>O Congresso Regional da Macro Região K está chegando, e estamos muito felizes em contar com a sua presença!</p>
 
