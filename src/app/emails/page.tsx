@@ -12,9 +12,7 @@ import EmailCard from "./_components/EmailCard";
 export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [usersEmails, setUsersEmails] = useState<TUsersEmails[]>([]);
-  const [statusMessage, setStatusMessage] = useState<string>(
-    "Nenhum usuário encontrado."
-  );
+  const [statusMessage, setStatusMessage] = useState<string>("");
 
   // * FETCH EMAILS * \\
   //  Pega todos os emails e seta no usersEmails
@@ -93,14 +91,23 @@ export default function Page() {
               },
             },
           };
+          
         })
       );
 
-      // Atualiza os emails com os resultados
-      setUsersEmails(usersEmailsArray);
+      // Atualiza os emails com os resultados, mantendo os emails que não foram atualizados
+      setUsersEmails((prevUsersEmails) => {
+        const updatedUsersMap = new Map( 
+          usersEmailsArray.map((user) => [user.value.user.id, user])
+        );
+        return prevUsersEmails.map((prevUser) =>
+          updatedUsersMap.get(prevUser.value.user.id) || prevUser
+        );
+      });
       // ? SE O PROCESSO PARAR NO MEIO, EMAILS JA ENVIADOS ESTÃO COMO "emailReceived": true ???
     }
-
+    
+    setStatusMessage("")
     setIsLoading(false);
   }
 
@@ -116,19 +123,15 @@ export default function Page() {
 
       <div className="space-y-3">
         <h1 className="text-xl font-bold">Inscritos:</h1>
+        <p>{statusMessage}</p>
 
-        {usersEmails.length > 0 ? ( // * SE HOUVER EMAILS ENVIADOS
-          usersEmails.map((emailObj, index) => (
-            <EmailCard
-              key={emailObj?.value.user.id || index}
-              emailObj={emailObj}
-              index={index}
-            />
-          ))
-        ) : (
-          // * SE NÃO HOUVER EMAILS ENVIADOS
-          <p className="text-muted-foreground font-light">{statusMessage}</p>
-        )}
+        {usersEmails.map((emailObj, index) => (
+          <EmailCard
+            key={emailObj?.value.user.id || index}
+            emailObj={emailObj}
+            index={index}
+          />
+        ))}
       </div>
     </div>
   );
