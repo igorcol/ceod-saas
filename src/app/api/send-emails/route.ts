@@ -8,31 +8,21 @@ interface TReqUser {
     emailReceived: boolean
 }
 
-
 export async function POST(req: Request): Promise<Response> {
     try {
         const DATA: Array<TReqUser> = await req.json()
         
-        const usersToSend = DATA.filter(person => !person.emailReceived)
+        const usersToSend = DATA.filter(person => !person.emailReceived && person.EMAIL)
+        console.log(usersToSend.map(user=>user.EMAIL))
         if (usersToSend.length === 0) {
             return NextResponse.json(
                 { message: "Todos emails ja foram enviados." },
                 { status: StatusCodes.OK }
             );
         }
-        /*
-            DATA:  
-            [
-                {
-                    '_id': '0934320348',
-                    'EMAIL': 'm@example.com',
-                    'emailReceived': true | false
-                },
-            ]
-        */
 
         if (!DATA || !Array.isArray(DATA)) {
-            return NextResponse.json({ error: "Lista de e-mails inválida" }, { status: StatusCodes.BAD_REQUEST });
+            return NextResponse.json({ error: "Lista de e-mails inválida." }, { status: StatusCodes.BAD_REQUEST });
         }
 
         // * Enviar e-mails
@@ -41,6 +31,7 @@ export async function POST(req: Request): Promise<Response> {
                 SendEmail(user.EMAIL, user["_id"])
             )
         );
+        console.log('Results: ', results)
 
         // LOG NO SERVIDOR (VS CODE)
         console.log("\n✅ RESULTADOS DOS E-MAILS ENVIADOS:");
@@ -53,7 +44,7 @@ export async function POST(req: Request): Promise<Response> {
                     console.log(`❌\t${result.value.user.email} -> ${result.value.error}`);
                 }
             } else {
-                console.log(`❌\t${DATA[index].EMAIL || "[ ]"} -> ${result.reason}`);
+                console.log(`❌\t${DATA[index].EMAIL || "null"} ->> ${result.reason}`);
             }
         });
 
@@ -67,7 +58,6 @@ export async function POST(req: Request): Promise<Response> {
             )
         }
 
-
         return NextResponse.json(
             { message: "E-mails processados", results },
             { status: StatusCodes.OK }
@@ -75,7 +65,7 @@ export async function POST(req: Request): Promise<Response> {
 
     }
     catch (error) {
-        console.error("❌ send-emails | Erro na API:", error);
+        console.error("❌ [send-emails]  | Erro na API:", error);
         return NextResponse.json(
             { error: "Erro interno no servidor" },
             { status: StatusCodes.INTERNAL_SERVER_ERROR }

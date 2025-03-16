@@ -9,8 +9,8 @@
     "start:prod": "next start",
     "start": "next start",
     
-    "start-api:dev1": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:dev",
-    "start-api:prod1": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\ceod_api_v2 && npm run start:prod",
+    "start-api:dev": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\_CEOD\\ceod_api_v2 && npm run start:dev",
+    "start-api:prod": "cd C:\\Users\\igor_\\Desktop\\PROGRAMAÇÃO\\_CEOD\\ceod_api_v2 && npm run start:prod",
     "start-api:dev2": "cd C:\\Programating\\Backend\\ceod_api_v2 && npm run start:dev",
     "start-api:prod2": "cd C:\\Programating\\Backend\\ceod_api_v2 && npm run start:prod",
     

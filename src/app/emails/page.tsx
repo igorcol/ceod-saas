@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { GetEmailsFromDb } from "@/lib/api";
 //import { ApiGetEmails } from "@/lib/Email/_requests/GetEmails";
 import { ApiSendEmails } from "@/lib/Email/_requests/SendEmails";
+import { ApiUpdateReceived } from "@/lib/Email/_requests/UpdateReceived";
 import { useEffect, useState } from "react";
 
 // TODO : ----------> ALTERAR EMAILRECEIVED PARA TRUE
@@ -14,6 +15,7 @@ export default function Page() {
       user: {
         email: string;
         id: string;
+        emailReceived: boolean;
       };
       success: boolean | null;
       error?: { response: string | undefined };
@@ -36,7 +38,7 @@ export default function Page() {
       const usersEmailsArray: TUsersEmails[] = emails.map((user) => ({
         status: "undefined",
         value: {
-          user: { email: user.EMAIL, id: user._id },
+          user: { email: user.EMAIL, id: user._id,emailReceived: user.emailReceived },
           success: user.emailReceived ? true : null,
           error: { response: undefined },
         },
@@ -44,46 +46,66 @@ export default function Page() {
 
       setUsersEmails(usersEmailsArray);
     }
-
     getEmails();
   }, []);
-  // useEffect(() => {
-  //   usersEmails.map((emailObj) => {
-  //     console.log(emailObj);
-  //   });
-  // }, [usersEmails]);
 
-  // * ENVIO DE EMAILS * \\
+  useEffect(() => {
+    usersEmails.map((emailObj) => {
+      console.log(emailObj);
+    });
+  }, [usersEmails]);
+
+  // * --- ENVIO DE EMAILS --- * \\
   async function handleSendEmails() {
     setIsLoading(true);
     setStatusMessage("Enviando emails...");
 
-    const emails = usersEmails.map(emailObj => ({
-      _id: emailObj.value.user.id,
-      EMAIL: emailObj.value.user.email
+    // Lista de emails para o envio  
+    const emailsTosend = usersEmails // apenas usuarios que tem email e que ainda não receberam
+    .filter(user => !user.value.user.emailReceived && user.value.user.email !== null)
+    .map(user => ({
+      _id: user.value.user.id,
+      EMAIL: user.value.user.email,
+      emailReceived: user.value.user.emailReceived
     }));
-    const result = await ApiSendEmails(emails); // Espera um array de objetos com _id e EMAIL
 
-    if (result && result.results) {
-      //console.log("result.results", result.results);
-      const usersEmailsArray: TUsersEmails[] = result.results.map(
-        (result: TUsersEmails) => ({
-          status: result.status,
-          value: {
-            success: result.value?.success || false,
-            user: {
-              email: result.value?.user.email || "-- Usuário sem email --",
-              id: result.value?.user.id || " -- Usuário sem ID --",
+    // Envia emails
+    const result = await ApiSendEmails(emailsTosend); 
+    console.log('Sending emails to:', emailsTosend)
+    console.log('result ApiSendEmails(emails):', result)
+    //TODO -- SETAR UM OUTRO <p> DE STATUS PARA RESULT.MESSAGE 
+
+    // --
+    if (result && result.results) { 
+      const usersEmailsArray: TUsersEmails[] = await Promise.all(
+        result.results.map(async (result: TUsersEmails) => {
+          const emailSuccess = result.value?.success || false
+
+          if (emailSuccess) { // Se conseguiu enviar o email
+            await ApiUpdateReceived(result.value?.user.id, true) // Atualiza EmailReceived
+          }
+
+          return {
+            status: result.status,
+            value: {
+              success: emailSuccess,
+              user: {
+                email: result.value?.user.email || "-- Usuário sem email --",
+                id: result.value?.user.id || " -- Usuário sem ID --",
+                emailReceived: emailSuccess
+              },
+              error: {
+                response: result.value?.error?.response,
+              },
             },
-            error: {
-              response: result.value?.error?.response,
-            },
-          },
+          }
+          
         })
-      );
+      )
 
-      //console.log("usersEmailsArray", usersEmailsArray);
+      // Atualiza os emails com os resultados
       setUsersEmails(usersEmailsArray);
+      // ? SE O PROCESSO PARAR NO MEIO, EMAILS JA ENVIADOS ESTÃO COMO "emailReceived": true ???
     }
 
     setIsLoading(false);
