@@ -52,9 +52,10 @@ export async function SendEmail(to: string, ticketName: string) {
             }
         ],
     };
-
+    
+    await DELAY(2000) // ESPERA 2 SEGUNDOS ANTES DE ENVIAR O PRÓXIMO EMAIL
     try {
-        await DELAY(2000) // ESPERA 2 SEGUNDOS ANTES DE ENVIAR O PRÓXIMO EMAIL
+        console.log(`✉️ Enviando Email para - ${mailOptions.to || "null"}`)
         await transporter.sendMail(mailOptions)
         //console.log(`✔️\t ${mailOptions.to} \t |\t Enviado`)
         return { 
