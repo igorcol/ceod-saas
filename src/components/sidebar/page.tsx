@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { FileSpreadsheet, Home, Mail, QrCode } from "lucide-react";
+import { ChartSpline, FileSpreadsheet, Home, Mail, QrCode } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -20,6 +20,7 @@ const menuItems = [
   { icon: FileSpreadsheet, label: "Converter Planilha", href: "/spreadsheet" },
   { icon: QrCode, label: "Gerar Ingressos", href: "/ingressos" },
   { icon: Mail, label: "Enviar Emails", href: "/emails" },
+  { icon: ChartSpline, label: "Dashboard", href: "/dashboard" },
 ];
 
 export default function Page() {
